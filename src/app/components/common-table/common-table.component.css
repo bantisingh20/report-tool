@@ -1,0 +1,10 @@
+/* Light background color for grouped rows */
+.grouped-row {
+  background-color: #f0f9ff; /* light blue */
+  font-weight: 600;
+}
+
+.group-cell {
+  font-weight: 700;
+  vertical-align: middle;
+}

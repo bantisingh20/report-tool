@@ -8,6 +8,10 @@ import { DropdownModule } from 'primeng/dropdown';
 import { ButtonModule } from 'primeng/button';
 import { ListboxModule } from 'primeng/listbox';
 import { CheckboxModule } from 'primeng/checkbox'; 
+import { DialogModule } from 'primeng/dialog';
+import { TableModule  } from 'primeng/table';
+import { PaginatorModule } from 'primeng/paginator';
+
 
 @NgModule({
   imports: [
@@ -20,6 +24,9 @@ import { CheckboxModule } from 'primeng/checkbox';
     DropdownModule,
     ListboxModule,
     CheckboxModule,
+    TableModule ,
+    DialogModule,
+    PaginatorModule,
     ReactiveFormsModule
   ],
   exports: [
@@ -31,6 +38,9 @@ import { CheckboxModule } from 'primeng/checkbox';
     ButtonModule,
     ListboxModule,
     CheckboxModule,
+    TableModule ,
+    DialogModule,
+    PaginatorModule,
     ReactiveFormsModule
   ]
 })

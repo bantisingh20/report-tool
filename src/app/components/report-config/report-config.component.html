@@ -17,15 +17,25 @@
             <span>Summary</span>
           </label>
         </div>
+
+        <div *ngIf="reportForm.get('fieldtype')?.invalid && reportForm.get('fieldtype')?.touched"
+          class="text-red-500 text-sm mt-1">
+          Field Type is required.
+        </div>
       </div>
 
       <!-- Tables -->
       <div>
         <label class="block text-sm font-semibold text-gray-700 mb-2">Tables</label>
         <p-multiSelect [options]="tablesAndViews" optionLabel="label" optionValue="name" formControlName="tableandview"
-          placeholder="Select Tables" (onChange)="onTableSelect($event)"  
-          [showToggleAll]="false" display="chip"  (onHide)="dropdownCloseFunction()"  class="w-full">
+          placeholder="Select Tables" (onChange)="onTableSelect($event)" [showToggleAll]="false" display="chip"
+          (onHide)="dropdownCloseFunction()" class="w-full">
         </p-multiSelect>
+
+        <div *ngIf="reportForm.get('tableandview')?.invalid && reportForm.get('tableandview')?.touched"
+          class="text-red-500 text-sm mt-1">
+          Please select at least one table.
+        </div>
 
       </div>
 
@@ -43,13 +53,18 @@
           [showToggleAll]="false" display="chip" class="w-full">
         </p-multiSelect>
 
+        <div *ngIf="reportForm.get('selectedcolumns')?.invalid && reportForm.get('selectedcolumns')?.touched"
+          class="text-red-500 text-sm mt-1">
+          Please select at least one column.
+        </div>
+
       </div>
 
     </form>
   </p-tabPanel>
 
   <!-- Tab 2: Filters / Sort / Group By -->
-  <p-tabPanel header="Filters / Sort / Group By" >
+  <p-tabPanel header="Filters / Sort / Group By" *ngIf="isColumnSelected">
     <div class="space-y-8 p-6 shadow-md rounded-lg" [formGroup]="reportForm">
 
       <!-- Filters Section -->
@@ -121,7 +136,6 @@
           (click)="addFilter()" title="Add a new filter"></button>
       </div>
 
-      <!-- Group By Section -->
       <!-- Grouping Section -->
       <div formArrayName="groupby" *ngIf="showColumnsAndGroupBy" class="space-y-4">
         <h5 class="text-lg font-semibold text-gray-700 flex items-center gap-2">
@@ -145,7 +159,6 @@
       </div>
 
 
-      <!-- Sorting Section -->
       <!-- Sorting Section -->
       <div formArrayName="sortby" class="space-y-4">
         <h5 class="text-lg font-semibold text-gray-700 flex items-center gap-2">
@@ -194,51 +207,43 @@
 
     </div>
   </p-tabPanel>
-  <!-- Tab 3: Preview -->
- <p-tabPanel header="Preview">
-  <div class="p-6 shadow-md rounded-lg">
-    <h5 class="text-lg font-semibold text-gray-700 mb-4">Report Preview</h5>
-    <p class="text-gray-600">This is where the report preview will be displayed.</p>
-    <!-- Placeholder for report preview -->
-    <div class="mt-4 p-4 border border-gray-300 bg-gray-100 rounded">
-      Report preview content goes here...
-    </div>
 
-    <!-- New table for configuration -->
-    <table class="mt-6 w-full border border-gray-300 rounded">
-      <thead>
-        <tr class="bg-gray-200">
-          <th class="p-2 border-b border-gray-300 text-left">Label</th>
-          <th class="p-2 border-b border-gray-300 text-left">Input</th>
-          <th class="p-2 border-b border-gray-300">Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td class="p-2 border-b border-gray-300 align-middle">
-            <label for="configName" class="block text-gray-700 font-medium">Configuration Name</label>
-          </td>
-          <td class="p-2 border-b border-gray-300">
-            <input 
-              id="configName" 
-              type="text" 
-              formControlName="configName" 
-              class="w-full p-2 border rounded border-gray-300" 
-              placeholder="Enter configuration name" />
-          </td>
-          <td class="p-2 border-b border-gray-300 text-center align-middle">
-            <button 
-              (click)="saveConfiguration()" 
-              class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-              Save
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <app-common-table></app-common-table>
+
+  <p-dialog header="Save Report" [(visible)]="showSaveModal" [modal]="true" [closable]="false"
+    [style]="{ width: '30vw' }">
+    <div class="p-fluid space-y-4" [formGroup]="reportForm">
+      <div>
+        <label for="reportname" class="block text-sm font-semibold mb-2">Report Name</label>
+        <input id="reportname" type="text" pInputText formControlName="reportname" placeholder="Enter report name"
+          class="w-full" />
+        <div *ngIf="reportForm.get('reportname')?.invalid && reportForm.get('reportname')?.touched"
+          class="text-red-500 text-sm">
+          Report name is required.
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-3">
+        <button pButton label="Cancel" class="p-button-text" (click)="showSaveModal = false"></button>
+        <button pButton label="Save" class="p-button-primary" (click)="onConfirmSave()"
+          [disabled]="reportForm.invalid"></button>
+      </div>
+    </div>
+  </p-dialog>
+
+
+  <!-- Action Buttons -->
+  <div class="flex flex-wrap justify-end gap-3 mt-6">
+
+    <button pButton type="button" label="Back" class="p-button-secondary" (click)="onBack()"></button>
+
+    <button pButton type="button" label="Reset" class="p-button-warning" (click)="addNewReport()"></button>
+
+    <button pButton type="button" label="Search" class="p-button-primary" (click)="previewReport()"></button>
+
+    <button pButton type="button" label="Save" class="p-button-success" (click)="showSaveModal = true"></button>
 
   </div>
-</p-tabPanel>
 
 
 </p-tabView>

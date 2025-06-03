@@ -5,17 +5,24 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { SharedModule } from '../../shared/shared.module';
 import { MetadataService } from '../../service/metadata.service';
 import { ReportConfigService } from '../../service/report-config.service';
+import { CommonTableComponent } from "../common-table/common-table.component";
 
 
 declare var bootstrap: any;
 @Component({
   selector: 'app-report-config',
-  imports: [SharedModule],
+  imports: [SharedModule, CommonTableComponent],
   templateUrl: './report-config.component.html',
   styleUrl: './report-config.component.css'
 })
 
 export class ReportConfigComponent implements OnInit {
+
+  onBack() {
+    throw new Error('Method not implemented.');
+  }
+
+  showSaveModal = false;
   originalTablesAndViews: any[] = [];
   previewMode: 'report' | 'chart' | null = null;
   showPreviewButtons: boolean = false;
@@ -24,9 +31,9 @@ export class ReportConfigComponent implements OnInit {
   displayedColumns: string[] = [];
   showPreview = false;
   directionOptions = [
-  { label: 'Ascending (A-Z)', value: 'asc' },
-  { label: 'Descending (Z-A)', value: 'desc' }
-];
+    { label: 'Ascending (A-Z)', value: 'asc' },
+    { label: 'Descending (Z-A)', value: 'desc' }
+  ];
 
   operators: string[] = ['between', 'equals', 'not equals', 'greater than', 'less than', 'contains'];
   operators2 = [
@@ -66,9 +73,24 @@ export class ReportConfigComponent implements OnInit {
   activeTab: any;
 
 
-  constructor(private http: HttpClient, private router: Router,  private fb: FormBuilder,
+  constructor(private http: HttpClient, private router: Router, private fb: FormBuilder,
     private route: ActivatedRoute, private metadataService: MetadataService,
-     private reprotconfig: ReportConfigService) { }
+    private reprotconfig: ReportConfigService) { }
+
+
+  onConfirmSave() {
+    if (this.reportForm.invalid) {
+      this.reportForm.markAllAsTouched();
+      return;
+    }
+
+    const reportname = this.reportForm.value.reportname;
+    const reportData = this.reportForm.value;
+
+    console.log('Saving report:', reportname, reportData);
+    this.showSaveModal = false;
+    // Save logic...
+  }
 
   ngOnInit() {
     this.availableFields = [];
@@ -215,9 +237,9 @@ export class ReportConfigComponent implements OnInit {
   }
 
   dropdownCloseFunction() {
-  // Your logic here
-  console.log('Dropdown closed!');
-}
+    // Your logic here
+    console.log('Dropdown closed!');
+  }
 
 
 
@@ -229,7 +251,7 @@ export class ReportConfigComponent implements OnInit {
       return;
     }
 
-     this.metadataService.getAvailableFieldsForTables(selectedTables).subscribe((fields: any[]) => {
+    this.metadataService.getAvailableFieldsForTables(selectedTables).subscribe((fields: any[]) => {
       this.availableFields = fields;
     });
 
@@ -301,8 +323,8 @@ export class ReportConfigComponent implements OnInit {
       });
 
       this.metadataService.getAvailableFieldsForTables(selectedTables).subscribe((fields: any[]) => {
-      this.availableFields = fields;
-    });
+        this.availableFields = fields;
+      });
       // this.http.post('http://localhost:3000/api/metadata/check-table-relations', { selectedTables })
       //   .subscribe((result: any) => {
       //     const relatedTables = result.relatedTables;
@@ -336,10 +358,10 @@ export class ReportConfigComponent implements OnInit {
 
   }
 
-//   get isColumnSelected(): boolean {
-//   const selectedColumns = this.reportForm.get('selectedcolumns')?.value;
-//   return Array.isArray(selectedColumns) && selectedColumns.length > 0;
-// }
+  get isColumnSelected(): boolean {
+    const selectedColumns = this.reportForm.get('selectedcolumns')?.value;
+    return Array.isArray(selectedColumns) && selectedColumns.length > 0;
+  }
 
   getColumns(table: any) {
     this.metadataService.getAvailableFieldsForTables(table).subscribe((fields: any[]) => {
@@ -624,13 +646,11 @@ export class ReportConfigComponent implements OnInit {
   }
 
   previewReport(): void {
-
     this.showPreview = false;
-
     //console.log(this.reportForm.value);
     if (this.reportForm.invalid) {
       this.reportForm.markAllAsTouched();
-      console.log('error')
+      alert('fill all');
       return;
     }
 
