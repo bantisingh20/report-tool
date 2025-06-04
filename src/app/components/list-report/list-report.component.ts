@@ -5,6 +5,7 @@ import { MetadataService } from '../../service/metadata.service';
 import { SharedModule } from '../../shared/shared.module';
 import { CommonTableComponent } from '../common-table/common-table.component';
 import { ChartComponentComponent } from "../chart-component/chart-component.component";
+import { NotificationService } from '../../service/NotificationService.service';
 
 @Component({
   selector: 'app-list-report',
@@ -13,20 +14,17 @@ import { ChartComponentComponent } from "../chart-component/chart-component.comp
   styleUrl: './list-report.component.css'
 })
 export class ListReportComponent implements OnInit, AfterViewInit {
-viewChart(_t19: any) {
-throw new Error('Method not implemented.');
-}
 
   selectedConfig: any = null;
   viewType: 'report' | 'chart' | null = null;
   showPreview: boolean = false;
   previewData: any;
-  constructor(private router: Router, private metadataService: MetadataService) { }
+  constructor(private router: Router, private metadataService: MetadataService, private notificationService: NotificationService) { }
 
   displayedColumns: string[] = [];
 
   listData: any[] = [];
- 
+
   configs = [];
 
   ngAfterViewInit() {
@@ -53,7 +51,8 @@ throw new Error('Method not implemented.');
       }
       , error: (err) => {
         console.log(err);
-         
+        this.notificationService.error('Error', err.statusText);
+
       }
     })
   }
@@ -69,40 +68,34 @@ throw new Error('Method not implemented.');
 
     const config = { ...item };
     //console.log(config);
-     
+
     this.metadataService.getDataforPreview(config).subscribe({
       next: (response: any) => {
         const responseData = response?.data;
         console.log('API Response:', responseData);
-         const { data, groupBy, chartData, displayedColumns, showPreview, ischart,isRaw ,isGroup } = this.metadataService.processPreviewData(responseData);
+        const { data, groupBy, chartData, displayedColumns, showPreview, ischart, isRaw, isGroup } = this.metadataService.processPreviewData(responseData);
 
-        this.previewData = { data, groupBy, chartData, displayedColumns, showPreview, ischart,isRaw ,isGroup };
+        this.previewData = { data, groupBy, chartData, displayedColumns, showPreview, ischart, isRaw, isGroup };
         this.displayedColumns = displayedColumns;
-        this.showPreview = showPreview;
-
-       
-
-         if (this.previewData.data.length > 0) {
+        this.showPreview = showPreview; 
+        if (this.previewData.data.length > 0) {
           //console.log(this.previewData);
-           
+          this.notificationService.success('Success', 'The operation completed successfully.');
+
         } else {
-          //console.log(this.previewData);
-           
+          this.notificationService.info('Info', 'Data Not Found');
+
         }
       },
 
       error: (err) => {
-        this.previewData = {
-          data: [],
-          chartData: [],
-          tableName: ''
-        };
+        this.previewData = {data: [],  chartData: [],  tableName: ''    };
         this.displayedColumns = [];
         this.showPreview = false;
 
         const message = err?.error?.message || 'Failed to fetch preview data.';
         console.error('Error fetching data:', err);
-        
+        this.notificationService.error('Error', message);
       }
     });
   }

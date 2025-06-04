@@ -14,7 +14,7 @@ import { PaginatorModule } from 'primeng/paginator';
 import { SelectModule } from 'primeng/select';
 import { InputTextModule } from 'primeng/inputtext';
 import { ChartModule } from 'primeng/chart';
-
+import { ToastModule } from 'primeng/toast';
 @NgModule({
   imports: [
     CommonModule,
@@ -33,6 +33,7 @@ import { ChartModule } from 'primeng/chart';
     InputTextModule,
     InputTextModule,
     ChartModule,
+    ToastModule,
     ReactiveFormsModule
   ],
   exports: [
@@ -50,6 +51,7 @@ import { ChartModule } from 'primeng/chart';
     SelectModule,
     InputTextModule,
     ChartModule,
+    ToastModule,
     ReactiveFormsModule
   ]
 })

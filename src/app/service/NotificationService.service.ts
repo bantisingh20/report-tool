@@ -1,46 +1,25 @@
 import { Injectable } from '@angular/core';
-//import { MatSnackBar } from '@angular/material/snack-bar';
+import { MessageService } from 'primeng/api';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class NotificationService {
+  constructor(private messageService: MessageService) {}
 
-  // constructor(private snackBar: MatSnackBar) { }
+  success(summary: string, detail: string, life: number = 2000) {
+    this.messageService.add({ severity: 'success', summary, detail, life });
+  }
 
-  // showNotification(message: string, type: 'success' | 'error' | 'warning' | 'info') {
-  //   let icon: string;
-  //   let panelClass: string;
+  error(summary: string, detail: string, life: number = 2000) {
+    this.messageService.add({ severity: 'error', summary, detail, life });
+  }
 
-  //   switch (type) {
-  //     case 'success':
-  //       icon = '✅';
-  //       panelClass = 'success-snackbar';
-  //       break;
-  //     case 'error':
-  //       icon = '❌';
-  //       panelClass = 'error-snackbar';
-  //       break;
-  //     case 'warning':
-  //       icon = '⚠️';
-  //       panelClass = 'warning-snackbar';
-  //       break;
-  //     case 'info':
-  //       icon = 'ℹ️';
-  //       panelClass = 'info-snackbar';
-  //       break;
-  //   }
+  info(summary: string, detail: string, life: number = 2000) {
+    this.messageService.add({ severity: 'info', summary, detail, life });
+  }
 
-  //   this.snackBar.open(
-  //     `${icon} ${message}`,
-  //     'Close',
-  //     {
-  //       duration: 3000,
-  //       panelClass: [panelClass],
-  //       horizontalPosition: 'center',
-  //       verticalPosition: 'top'
-  //     }
-  //   );
-  // }
-
+  warn(summary: string, detail: string, life: number = 2000) {
+    this.messageService.add({ severity: 'warn', summary, detail, life });
+  }
 }

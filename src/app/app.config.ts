@@ -6,10 +6,10 @@ import Aura from '@primeng/themes/aura';
 import { HttpClientModule } from '@angular/common/http';
 import { routes } from './app.routes';
 import { FilterMatchMode } from 'primeng/api';
-import { provideHttpClient } from '@angular/common/http';
-
+import { provideHttpClient } from '@angular/common/http'; 
+import { MessageService } from 'primeng/api';
 export const appConfig: ApplicationConfig = {
-  providers: [provideHttpClient(),provideZoneChangeDetection({ eventCoalescing: true }), provideRouter(routes),
+  providers: [MessageService,provideHttpClient(),provideZoneChangeDetection({ eventCoalescing: true }), provideRouter(routes),
 
   provideAnimationsAsync(),
   providePrimeNG({
