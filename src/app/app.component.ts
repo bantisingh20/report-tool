@@ -43,10 +43,10 @@ export class AppComponent implements OnInit {
   }
 
   toggleDarkMode() {
-    this.notificationService.success('Success', 'The operation completed successfully.');
-    this.notificationService.error('Error', 'Something went wrong.');
-    this.notificationService.warn('Warning', 'This is a warning.');
-    this.notificationService.info('Info', 'This is some information.');
+    // this.notificationService.success('Success', 'The operation completed successfully.');
+    // this.notificationService.error('Error', 'Something went wrong.');
+    // this.notificationService.warn('Warning', 'This is a warning.');
+    // this.notificationService.info('Info', 'This is some information.');
 
     this.darkMode = !this.darkMode;
     const element = document.querySelector('html');

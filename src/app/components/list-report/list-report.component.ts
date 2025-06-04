@@ -6,7 +6,7 @@ import { SharedModule } from '../../shared/shared.module';
 import { CommonTableComponent } from '../common-table/common-table.component';
 import { ChartComponentComponent } from "../chart-component/chart-component.component";
 import { NotificationService } from '../../service/NotificationService.service';
-
+ 
 @Component({
   selector: 'app-list-report',
   imports: [SharedModule, CommonTableComponent, ChartComponentComponent],
@@ -14,6 +14,7 @@ import { NotificationService } from '../../service/NotificationService.service';
   styleUrl: './list-report.component.css'
 })
 export class ListReportComponent implements OnInit, AfterViewInit {
+companyProfiles: any[] = [];
 
   selectedConfig: any = null;
   viewType: 'report' | 'chart' | null = null;
@@ -32,6 +33,82 @@ export class ListReportComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
+
+    this.companyProfiles = [
+            {
+                name: "Apple",
+                sector: "Technology",
+                thisYearSales: "$ 2,000,000,000",
+                lastYearSales: "$ 1,700,000,000",
+                thisYearGrowth: "21%",
+                lastYearGrowth: "15%",
+            },
+            {
+                name: "Mac Donalds",
+                sector: "Food",
+                thisYearSales: "$ 1,100,000,000",
+                lastYearSales: "$ 800,000,000",
+                thisYearGrowth: "18%",
+                lastYearGrowth: "15%",
+            },
+            {
+                name: "Google",
+                sector: "Technology",
+                thisYearSales: "$ 1,800,000,000",
+                lastYearSales: "$ 1,500,000,000",
+                thisYearGrowth: "15%",
+                lastYearGrowth: "13%",
+            },
+            {
+                name: "Domino's",
+                sector: "Food",
+                thisYearSales: "$ 1,000,000,000",
+                lastYearSales: "$ 800,000,000",
+                thisYearGrowth: "13%",
+                lastYearGrowth: "14%",
+            },
+            {
+                name: "Meta",
+                sector: "Technology",
+                thisYearSales: "$ 1,100,000,000",
+                lastYearSales: "$ 1,200,000,000",
+                thisYearGrowth: "11%",
+                lastYearGrowth: "12%",
+            },
+            {
+                name: "Snapchat",
+                sector: "Technology",
+                thisYearSales: "$ 1,500,000,000",
+                lastYearSales: "$ 1,200,000,000",
+                thisYearGrowth: "16%",
+                lastYearGrowth: "14%",
+            },
+            {
+                name: "Tesla",
+                sector: "AutoMobile",
+                thisYearSales: "$ 1,300,000,000",
+                lastYearSales: "$ 900,000,000",
+                thisYearGrowth: "23%",
+                lastYearGrowth: "16%",
+            },
+            {
+                name: "Ford",
+                sector: "AutoMobile",
+                thisYearSales: "$ 700,000,000",
+                lastYearSales: "$ 750,000,000",
+                thisYearGrowth: "14%",
+                lastYearGrowth: "15%",
+            },
+            {
+                name: "Twitter",
+                sector: "Technology",
+                thisYearSales: "$ 1,200,000,000",
+                lastYearSales: "$ 1,200,000,000",
+                thisYearGrowth: "19%",
+                lastYearGrowth: "18%",
+            }
+        ];
+
     this.loadReport();
 
     this.router.events.pipe(

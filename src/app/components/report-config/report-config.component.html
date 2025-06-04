@@ -2,303 +2,486 @@
 
   <!-- Tab 1: Report Configuration -->
   <p-tabPanel header="Report Configuration">
-    <form [formGroup]="reportForm" class="space-y-6 p-6 shadow rounded-lg">
+    <form [formGroup]="reportForm" class="space-y-4 p-4 bg-grey/20 shadow-sm rounded-lg border border-gray-100">
 
-      <!-- Field Type -->
-      <div>
-        <label class="block text-sm font-semibold text-gray-700 mb-2">Field Type</label>
-        <div class="flex space-x-6">
-          <label class="inline-flex items-center space-x-2">
-            <input type="radio" formControlName="fieldtype" value="count" (change)="onFieldTypeChange()" />
-            <span>Count</span>
+      <!-- Field Type Section with Card Design -->
+      <div class="space-y-3">
+        <label class="block text-xs font-medium text-gray-600 uppercase tracking-wide">Field Type</label>
+
+        <div class="grid grid-cols-2 gap-3">
+          <!-- Count Option -->
+          <label class="relative cursor-pointer group">
+            <input type="radio" formControlName="fieldtype" value="count" (change)="onFieldTypeChange()"
+              class="sr-only peer" />
+            <div class="flex items-center p-3 bg-white border-2 border-gray-200 rounded-lg transition-all duration-200 
+                  peer-checked:border-blue-500 peer-checked:bg-blue-50 
+                  hover:border-gray-300 hover:shadow-sm group-hover:bg-gray-50">
+              <div class="flex items-center space-x-3">
+                <div class="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center
+                      peer-checked:bg-blue-500 transition-colors duration-200">
+                  <i class="pi pi-chart-bar text-blue-600 text-sm peer-checked:text-white"></i>
+                </div>
+                <div>
+                  <div class="text-sm font-medium text-gray-900">Count</div>
+                  <div class="text-xs text-gray-500">Aggregate data counts</div>
+                </div>
+              </div>
+              <!-- Selection Indicator -->
+              <div class="ml-auto opacity-0 peer-checked:opacity-100 transition-opacity duration-200">
+                <i class="pi pi-check-circle text-blue-500 text-sm"></i>
+              </div>
+            </div>
           </label>
-          <label class="inline-flex items-center space-x-2">
-            <input type="radio" formControlName="fieldtype" value="summary" (change)="onFieldTypeChange()" />
-            <span>Summary</span>
+
+          <!-- Summary Option -->
+          <label class="relative cursor-pointer group">
+            <input type="radio" formControlName="fieldtype" value="summary" (change)="onFieldTypeChange()"
+              class="sr-only peer" />
+            <div class="flex items-center p-3 bg-white border-2 border-gray-200 rounded-lg transition-all duration-200 
+                  peer-checked:border-green-500 peer-checked:bg-green-50 
+                  hover:border-gray-300 hover:shadow-sm group-hover:bg-gray-50">
+              <div class="flex items-center space-x-3">
+                <div class="flex-shrink-0 w-8 h-8 bg-green-100 rounded-full flex items-center justify-center
+                      peer-checked:bg-green-500 transition-colors duration-200">
+                  <i class="pi pi-table text-green-600 text-sm peer-checked:text-white"></i>
+                </div>
+                <div>
+                  <div class="text-sm font-medium text-gray-900">Summary</div>
+                  <div class="text-xs text-gray-500">Detailed data view</div>
+                </div>
+              </div>
+              <!-- Selection Indicator -->
+              <div class="ml-auto opacity-0 peer-checked:opacity-100 transition-opacity duration-200">
+                <i class="pi pi-check-circle text-green-500 text-sm"></i>
+              </div>
+            </div>
           </label>
         </div>
 
+        <!-- Error Message -->
         <div *ngIf="reportForm.get('fieldtype')?.invalid && reportForm.get('fieldtype')?.touched"
-          class="text-red-500 text-sm mt-1">
+          class="text-red-500 text-xs mt-2 flex items-center gap-1 bg-red-50 p-2 rounded border border-red-200">
+          <i class="pi pi-exclamation-triangle text-xs"></i>
           Field Type is required.
         </div>
       </div>
-
       <!-- Tables -->
-      <div>
-        <label class="block text-sm font-semibold text-gray-700 mb-2">Tables</label>
+      <div class="space-y-2">
+        <label class="block text-xs font-medium text-gray-600 uppercase tracking-wide">Tables</label>
         <p-multiSelect [options]="tablesAndViews" optionLabel="label" optionValue="name" formControlName="tableandview"
           placeholder="Select Tables" (onChange)="onTableSelect($event)" [showToggleAll]="false" display="chip"
-          (onHide)="dropdownCloseFunction()" class="w-full">
+          (onHide)="dropdownCloseFunction()"
+          class="w-full text-sm [&_.p-multiselect]:!text-sm [&_.p-multiselect]:!py-2 [&_.p-multiselect]:!px-3">
         </p-multiSelect>
 
         <div *ngIf="reportForm.get('tableandview')?.invalid && reportForm.get('tableandview')?.touched"
-          class="text-red-500 text-sm mt-1">
+          class="text-red-500 text-xs mt-1 flex items-center gap-1">
+          <i class="pi pi-exclamation-triangle text-xs"></i>
           Please select at least one table.
         </div>
-
       </div>
 
-
-       <div *ngIf="reportForm.get('fieldtype')?.value === 'summary'">
-        <label class="block text-sm font-semibold text-gray-700 mb-2">Columns</label>
+      <!-- Summary Columns -->
+      <div *ngIf="reportForm.get('fieldtype')?.value === 'summary'" class="space-y-2">
+        <label class="block text-xs font-medium text-gray-600 uppercase tracking-wide">Columns</label>
         <p-multiSelect [options]="availableFields" optionLabel="label" optionValue="column_name"
           formControlName="selectedcolumns" placeholder="Select columns" (onChange)="onColumnSelect($event)"
-          [showToggleAll]="false" display="chip" class="w-full">
+          [showToggleAll]="false" display="chip"
+          class="w-full text-sm [&_.p-multiselect]:!text-sm [&_.p-multiselect]:!py-2 [&_.p-multiselect]:!px-3">
         </p-multiSelect>
 
         <div *ngIf="reportForm.get('selectedcolumns')?.invalid && reportForm.get('selectedcolumns')?.touched"
-          class="text-red-500 text-sm mt-1">
+          class="text-red-500 text-xs mt-1 flex items-center gap-1">
+          <i class="pi pi-exclamation-triangle text-xs"></i>
           Please select at least one column.
         </div>
-
       </div>
 
-      <!-- XY Config or Columns -->
-      <div *ngIf="reportForm.get('fieldtype')?.value === 'count'">
-        <label class="block text-sm font-semibold text-gray-700 mb-2">XY Configuration</label>
+      <!-- XY Configuration -->
+      <div *ngIf="reportForm.get('fieldtype')?.value === 'count'" class="space-y-3">
+        <div class="flex items-center gap-2 mb-2">
+          <div class="w-6 h-6 bg-green-100 rounded-md flex items-center justify-center">
+            <i class="pi pi-sliders-h text-green-600 text-xs"></i>
+          </div>
+          <label class="text-sm font-medium text-gray-700">XY Configuration</label>
+        </div>
 
-        <div formArrayName="xyaxis" class="mb-4 space-y-4">
+        <!-- <div formArrayName="xyaxis" class="space-y-3 hidden">
+                  <div *ngFor="let axis of xyaxis.controls; let i = index" [formGroupName]="i"
+                    class="p-3 bg-gray-50 rounded-md border border-gray-200 space-y-3">
+        
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                      
+                      <div class="space-y-1">
+                        <label class="block text-xs font-medium text-gray-500">X-Axis Field</label>
+                        <p-dropdown [options]="selectedcolumns" formControlName="xAxisField" optionLabel="label"
+                          optionValue="column_name" placeholder="Select field" (onChange)="onXAxisFieldChange(i)"
+                          class="w-full text-sm [&_.p-dropdown]:!text-sm [&_.p-dropdown]:!py-1.5 [&_.p-dropdown]:!px-2.5">
+                        </p-dropdown>
+                        <div *ngIf="xyaxis.at(i).get('xAxisField')?.invalid && xyaxis.at(i).get('xAxisField')?.touched"
+                          class="text-red-500 text-xs flex items-center gap-1">
+                          <i class="pi pi-exclamation-triangle text-xs"></i> Field is required.
+                        </div>
+                      </div>
+         
+                      <div class="space-y-1" *ngIf="showXAxisTransformationOptions(i)">
+                        <label class="block text-xs font-medium text-gray-500">X-Axis Transform</label>
+                        <p-dropdown formControlName="xAxisTransformation" [options]="xAxisTransformationOptions"
+                          class="w-full text-sm [&_.p-dropdown]:!text-sm [&_.p-dropdown]:!py-1.5 [&_.p-dropdown]:!px-2.5">
+                        </p-dropdown>
+                      </div> 
+        
+                      <div class="space-y-1">
+                        <label class="block text-xs font-medium text-gray-500">Y-Axis Field</label>
+                        <p-dropdown [options]="availableFields" formControlName="yAxisField" optionLabel="label"
+                          optionValue="column_name" placeholder="Select field"
+                          class="w-full text-sm [&_.p-dropdown]:!text-sm [&_.p-dropdown]:!py-1.5 [&_.p-dropdown]:!px-2.5">
+                        </p-dropdown>
+                        <div *ngIf="xyaxis.at(i).get('yAxisField')?.invalid && xyaxis.at(i).get('yAxisField')?.touched"
+                          class="text-red-500 text-xs flex items-center gap-1">
+                          <i class="pi pi-exclamation-triangle text-xs"></i> Field is required.
+                        </div>
+                      </div>
+         
+                      <div class="space-y-1" *ngIf="showYAxisAggregationOptions(i)">
+                        <label class="block text-xs font-medium text-gray-500">Y-Axis Aggregation</label>
+                        <p-dropdown [options]="getYaxisAggregationOptions(i)" formControlName="yAxisAggregation"
+                          optionLabel="label" optionValue="value" placeholder="Select aggregation"
+                          class="w-full text-sm [&_.p-dropdown]:!text-sm [&_.p-dropdown]:!py-1.5 [&_.p-dropdown]:!px-2.5">
+                        </p-dropdown>
+                      </div>
+        
+                      
+        
+                      <div class="space-y-1">
+                        <label class="block text-xs font-medium text-gray-500"></label>
+                        <button type="button" (click)="removeSorting(i)" class="flex-shrink-0 w-7 h-7 bg-red-50 hover:bg-red-100 border border-red-200 hover:border-red-300 
+                       rounded-md flex items-center justify-center transition-colors duration-200 group"
+                          title="Remove Sorting">
+                          <i class="pi pi-trash text-red-500 text-xs group-hover:text-red-600"></i>
+                        </button>
+                      </div>
+        
+        
+                    </div>
+        
+         
+                    <div class="hidden">
+                      <p-dropdown formControlName="xAxisDirection" [options]="xAxisDirectionOptions"></p-dropdown>
+                      <p-dropdown formControlName="yAxisDirection"></p-dropdown>
+                    </div>
+                  </div>
+         
+                  <div class="text-center py-4">
+                    <button type="button" *ngIf="xyaxis.length === 0" (click)="addXYAxis()" class="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-blue-600 
+                       bg-blue-50 hover:bg-blue-100 border border-blue-200 hover:border-blue-300 
+                       rounded-md transition-colors duration-200" title="Add XY Axis Configuration">
+                      <i class="pi pi-plus text-xs"></i>
+                      Add XY Axis Configuration
+                    </button>
+                  </div>
+                </div> -->
 
-          <div *ngFor="let axis of xyaxis.controls; let i = index" [formGroupName]="i" class="flex flex-wrap gap-4">
 
-            <!-- X-Axis Field Selection -->
-            <div class="flex-1 min-w-[200px]">
-              <p-dropdown [options]="selectedcolumns" formControlName="xAxisField" optionLabel="label"
-                optionValue="column_name" placeholder="Select columns" (onChange)="onXAxisFieldChange(i)"
-                class="w-full">
-              </p-dropdown>
+        <div formArrayName="xyaxis" class="space-y-3 relative">
+          <div *ngFor="let axis of xyaxis.controls; let i = index" [formGroupName]="i"
+            class="p-3  bg-grey/20 rounded border border-gray-200 shadow-sm space-y-2 relative">
 
-              <div *ngIf="xyaxis.get('xAxisField')?.invalid && xyaxis.get('xAxisField')?.touched"
-                class="text-red-600 text-sm mt-1">
-                Field is required.
+            <!-- Delete Button (top-right, centered vertically) -->
+            <button type="button" (click)="removeXYAxis(i)" class="absolute top-1/2 -translate-y-1/2 right-2 w-6 h-6 flex items-center justify-center 
+             text-red-500 border border-red-200 hover:bg-red-100 hover:text-red-600 
+             rounded-full transition" title="Remove">
+              <i class="pi pi-trash text-xs"></i>
+            </button>
+
+            <!-- Grid layout for fields -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 items-end">
+
+              <!-- X-Axis Field -->
+              <div>
+                <label class="block text-[11px] font-medium text-gray-600 mb-0.5">X-Axis</label>
+                <p-dropdown [options]="selectedcolumns" formControlName="xAxisField" optionLabel="label"
+                  optionValue="column_name" placeholder="Field" (onChange)="onXAxisFieldChange(i)"
+                  class="w-full text-xs [&_.p-dropdown]:!text-xs [&_.p-dropdown]:!py-1.5 [&_.p-dropdown]:!px-2">
+                </p-dropdown>
+                <div *ngIf="xyaxis.at(i).get('xAxisField')?.invalid && xyaxis.at(i).get('xAxisField')?.touched"
+                  class="text-red-500 text-xs mt-0.5 flex items-center gap-1">
+                  <i class="pi pi-exclamation-triangle text-xs"></i> Required.
+                </div>
+              </div>
+
+              <!-- X-Axis Transform -->
+              <div *ngIf="showXAxisTransformationOptions(i)">
+                <label class="block text-[11px] font-medium text-gray-600 mb-0.5">X Transform</label>
+                <p-dropdown formControlName="xAxisTransformation" [options]="xAxisTransformationOptions"
+                  class="w-full text-xs [&_.p-dropdown]:!text-xs [&_.p-dropdown]:!py-1.5 [&_.p-dropdown]:!px-2">
+                </p-dropdown>
+              </div>
+
+              <!-- Y-Axis Field -->
+              <div>
+                <label class="block text-[11px] font-medium text-gray-600 mb-0.5">Y-Axis</label>
+                <p-dropdown [options]="availableFields" formControlName="yAxisField" optionLabel="label"
+                  optionValue="column_name" placeholder="Field"
+                  class="w-full text-xs [&_.p-dropdown]:!text-xs [&_.p-dropdown]:!py-1.5 [&_.p-dropdown]:!px-2">
+                </p-dropdown>
+                <div *ngIf="xyaxis.at(i).get('yAxisField')?.invalid && xyaxis.at(i).get('yAxisField')?.touched"
+                  class="text-red-500 text-xs mt-0.5 flex items-center gap-1">
+                  <i class="pi pi-exclamation-triangle text-xs"></i> Required.
+                </div>
+              </div>
+
+              <!-- Y-Axis Aggregation -->
+              <div *ngIf="showYAxisAggregationOptions(i)">
+                <label class="block text-[11px] font-medium text-gray-600 mb-0.5">Y Aggregation</label>
+                <p-dropdown [options]="getYaxisAggregationOptions(i)" formControlName="yAxisAggregation"
+                  optionLabel="label" optionValue="value" placeholder="Agg."
+                  class="w-full text-xs [&_.p-dropdown]:!text-xs [&_.p-dropdown]:!py-1.5 [&_.p-dropdown]:!px-2">
+                </p-dropdown>
               </div>
             </div>
 
-            <!-- X-Axis Data Transformation Options -->
-            <div class="flex-1 min-w-[200px]" *ngIf="showXAxisTransformationOptions(i)">
-              <p-dropdown formControlName="xAxisTransformation" [options]="xAxisTransformationOptions">
-                <ng-template pTemplate="selectedItem" let-selected>
-                  {{ selected?.label }}
-                </ng-template>
-              </p-dropdown>
-            </div>
-
-            <!-- X-Axis Direction (Hidden) -->
+            <!-- Hidden Controls -->
             <div class="hidden">
-              <p-dropdown formControlName="xAxisDirection" [options]="xAxisDirectionOptions">
-                <ng-template pTemplate="selectedItem" let-selected>
-                  {{ selected?.label }}
-                </ng-template>
-              </p-dropdown>
-            </div>
-
-            <!-- Y-Axis Field Selection -->
-            <div class="flex-1 min-w-[200px]">
-              <p-dropdown [options]="availableFields" formControlName="yAxisField" optionLabel="label"
-                optionValue="column_name" placeholder="Select Y-Axis Field" class="w-full">
-              </p-dropdown>
-
-              <div *ngIf="xyaxis.get('yAxisField')?.invalid && xyaxis.get('yAxisField')?.touched"
-                class="text-red-600 text-sm mt-1">
-                Field is required.
-              </div>
-            </div>
-
-            <!-- Y-Axis Aggregation Options -->
-            <div class="flex-1 min-w-[200px]" *ngIf="showYAxisAggregationOptions(i)">
-
-              <p-dropdown [options]="getYaxisAggregationOptions(i)" formControlName="yAxisAggregation"
-                optionLabel="label" optionValue="value" placeholder="Select Y-Axis Aggregation" class="w-full">
-              </p-dropdown>
-
-            </div>
-
-            <!-- Y-Axis Direction (Hidden) -->
-            <div class="hidden">
-              <p-dropdown formControlName="yAxisDirection">
-                <ng-template pTemplate="selectedItem" let-selected>
-                  {{ selected?.label }}
-                </ng-template>
-              </p-dropdown>
-            </div>
-
-            <!-- Remove Button -->
-            <div class="flex items-center">
-              <p-button icon="pi pi-trash" class="p-button-rounded p-button-outlined p-button-danger"
-                (click)="removeXYAxis(i)" title="Remove X-Y Axis">
-              </p-button>
+              <p-dropdown formControlName="xAxisDirection" [options]="xAxisDirectionOptions"></p-dropdown>
+              <p-dropdown formControlName="yAxisDirection"></p-dropdown>
             </div>
           </div>
 
-          <!-- Add New XY Axis Button -->
-
-          <p-button *ngIf="xyaxis.length === 0" icon="pi pi-plus-circle"
-            class="p-button-sm p-button-outline p-button-primary mt-2" (click)="addXYAxis()" title="Add X-Y Axis">
-          </p-button>
+          <!-- Add XY Axis Button -->
+          <div class="text-center pt-4" *ngIf="xyaxis.length === 0">
+            <button type="button" (click)="addXYAxis()" class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium text-blue-600 
+             bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded transition" title="Add XY Axis">
+              <i class="pi pi-plus text-xs"></i> Add XY Axis
+            </button>
+          </div>
         </div>
+
       </div>
- 
+
+
 
     </form>
   </p-tabPanel>
+
 
   <!-- Tab 2: Filters / Sort / Group By -->
   <p-tabPanel header="Filters / Sort / Group By"
     *ngIf="isColumnSelected || this.reportForm.get('fieldtype')?.value =='count'">
     <div class="space-y-8 p-6 shadow-md rounded-lg" [formGroup]="reportForm">
 
-      <!-- Filters Section -->
-      <div formArrayName="filters" class="space-y-4">
-        <h5 class="text-lg font-semibold text-gray-700 flex items-center gap-2">
-          <i class="bi bi-funnel text-red-500"></i> Filters
-        </h5>
-
-        <div *ngFor="let filter of filters.controls; let i = index" [formGroupName]="i"
-          class="grid grid-cols-1 md:grid-cols-4 gap-4 items-start">
-
-          <div>
-            <p-dropdown [options]="selectedcolumns" bindLabel="label" bindValue="column_name" formControlName="field"
-              placeholder="Select filter" [showClear]="true" class="w-full" (onChange)="onFilterFieldChange($event, i)">
-            </p-dropdown>
-            <div *ngIf="filter.get('field')?.invalid && filter.get('field')?.touched" class="text-red-500 text-sm mt-1">
-              Field is required.
-            </div>
+      <!-- Filters array -->
+      <div formArrayName="filters" class="space-y-3">
+        <div class="flex items-center gap-2 mb-3">
+          <div class="w-6 h-6 bg-gray-100 rounded-md flex items-center justify-center">
+            <i class="pi pi-filter text-green-600 text-xs"></i>
           </div>
-
-          <div>
-            <!-- <p-dropdown [options]="operators" formControlName="operator" placeholder="Select Operator"
-              [showClear]="true" class="w-full" (onChange)="onOperatorChange(i)">
-            </p-dropdown> -->
-
-            <p-dropdown [options]="operatorsByRow[i] || []" formControlName="operator" placeholder="Select Operator"
-              [showClear]="true" class="w-full" (onChange)="onOperatorChange(i)">
-            </p-dropdown>
-            <div *ngIf="filter.get('operator')?.invalid && filter.get('operator')?.touched"
-              class="text-red-500 text-sm mt-1">
-              Operator is required.
-            </div>
-          </div>
-
-          <ng-container *ngIf="filter.get('operator')?.value === 'between'; else singleValue">
-            <div class="grid grid-cols-1 gap-2">
-              <input [type]="getInputType(filter.get('selectedField')?.value?.value?.data_type)"
-                formControlName="valueFrom" placeholder="From" class="w-full p-inputtext p-component" />
-              <div *ngIf="filter.get('valueFrom')?.invalid && filter.get('valueFrom')?.touched"
-                class="text-red-500 text-sm">
-                From value is required.
-              </div>
-
-              <input [type]="getInputType(filter.get('selectedField')?.value?.value?.data_type)"
-                formControlName="valueTo" placeholder="To" class="w-full p-inputtext p-component" />
-              <div *ngIf="filter.get('valueTo')?.invalid && filter.get('valueTo')?.touched"
-                class="text-red-500 text-sm">
-                To value is required.
-              </div>
-            </div>
-          </ng-container>
-
-          <ng-template #singleValue>
-            <div>
-              <input [type]="getInputType(filter.get('selectedField')?.value?.value?.data_type)" formControlName="value"
-                placeholder="Enter value" class="w-full p-inputtext p-component" />
-              <div *ngIf="filter.get('value')?.invalid && filter.get('value')?.touched"
-                class="text-red-500 text-sm mt-1">
-                Value is required.
-              </div>
-            </div>
-          </ng-template>
-
-
-
-          <div class="flex justify-end">
-            <p-button icon="pi pi-trash" class="p-button-rounded p-button-outlined p-button-danger"
-              (click)="removeFilter(i)" title="Remove Filter">
-            </p-button>
-          </div>
+          <h5 class="text-sm font-medium text-gray-700">Filters</h5>
         </div>
 
-        <p-button *ngIf="xyaxis.length === 0" icon="pi pi-plus-circle"
-          class="p-button-sm p-button-outline p-button-primary mt-2" (click)="addFilter()" title="Add Filter">
-        </p-button>
+        <div class="space-y-2">
+          <div *ngFor="let filter of filters.controls; let i = index" [formGroupName]="i"
+            class="flex items-start gap-2 p-2  rounded-md border border-gray-200">
 
+            <!-- Field Dropdown -->
+            <div class="flex-1 space-y-1">
+              <p-dropdown [options]="selectedcolumns" bindLabel="label" bindValue="column_name" formControlName="field"
+                placeholder="Select filter" [showClear]="true" class="w-full"
+                (onChange)="onFilterFieldChange($event, i)">
+              </p-dropdown>
+              <div *ngIf="filter.get('field')?.invalid && filter.get('field')?.touched"
+                class="text-red-500 text-sm mt-1">
+                Field is required.
+              </div>
+            </div>
+
+            <!-- Operator Dropdown -->
+            <div class="w-40 space-y-1">
+              <p-dropdown [options]="operatorsByRow[i] || []" formControlName="operator" placeholder="Select Operator"
+                [showClear]="true" class="w-full" (onChange)="onOperatorChange(i)">
+              </p-dropdown>
+              <div *ngIf="filter.get('operator')?.invalid && filter.get('operator')?.touched"
+                class="text-red-500 text-sm mt-1">
+                Operator is required.
+              </div>
+            </div>
+
+            <div class="flex-1">
+              <ng-container *ngIf="filter.get('operator')?.value === 'between'; else singleValue">
+                <div class="flex items-center gap-2">
+
+                  <!-- From Input -->
+                  <div class="flex flex-col w-36">
+                    <input [type]="getInputType(filter.get('selectedField')?.value?.value?.data_type)"
+                      formControlName="valueFrom" placeholder="From" class="p-inputtext p-component w-full" />
+                    <div *ngIf="filter.get('valueFrom')?.invalid && filter.get('valueFrom')?.touched"
+                      class="text-red-500 text-xs mt-1">
+                      From value is required.
+                    </div>
+                  </div>
+
+                  <!-- To Input -->
+                  <div class="flex flex-col w-36">
+                    <input [type]="getInputType(filter.get('selectedField')?.value?.value?.data_type)"
+                      formControlName="valueTo" placeholder="To" class="p-inputtext p-component w-full" />
+                    <div *ngIf="filter.get('valueTo')?.invalid && filter.get('valueTo')?.touched"
+                      class="text-red-500 text-xs mt-1">
+                      To value is required.
+                    </div>
+                  </div>
+
+                </div>
+              </ng-container>
+
+              <!-- Single Value Input -->
+              <ng-template #singleValue>
+                <div class="flex flex-col">
+                  <input [type]="getInputType(filter.get('selectedField')?.value?.value?.data_type)"
+                    formControlName="value" placeholder="Enter value" class="p-inputtext p-component w-full" />
+                  <div *ngIf="filter.get('value')?.invalid && filter.get('value')?.touched"
+                    class="text-red-500 text-xs mt-1">
+                    Value is required.
+                  </div>
+                </div>
+              </ng-template>
+            </div>
+
+
+            <!-- Remove Button -->
+            <button type="button" (click)="removeFilter(i)" class="flex-shrink-0 w-7 h-7 bg-red-50 hover:bg-red-100 border border-red-200 hover:border-red-300 
+               rounded-md flex items-center justify-center transition-colors duration-200 group"
+              title="Remove Sorting">
+              <i class="pi pi-trash text-red-500 text-xs group-hover:text-red-600"></i>
+            </button>
+          </div>
+
+          <!-- Add Sorting Button -->
+          <div class="text-center py-3">
+            <button type="button" (click)="addFilter()" class="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-blue-600 
+               bg-blue-50 hover:bg-blue-100 border border-blue-200 hover:border-blue-300 
+               rounded-md transition-colors duration-200" title="Add Sorting">
+              <i class="pi pi-plus text-xs"></i>
+              Add Filter
+            </button>
+          </div>
+        </div>
       </div>
 
       <!-- Grouping Section -->
-      <div formArrayName="groupby" *ngIf="showColumnsAndGroupBy" class="space-y-4">
-        <h5 class="text-lg font-semibold text-gray-700 flex items-center gap-2">
-          <i class="bi bi-collection text-blue-500"></i> Grouping
-        </h5>
-          
-        <div *ngFor="let group of groupby.controls; let i = index" [formGroupName]="i" class="flex items-center gap-2">
-          <p-dropdown [options]="selectedcolumns" bindLabel="label" bindValue="column_name" formControlName="field"
-            placeholder="Select Field" [showClear]="true" class="w-full">
-          </p-dropdown>
-          <div *ngIf="group.get('field')?.invalid && group.get('field')?.touched" class="text-red-500 text-sm">
-            Field is required.
+      <div formArrayName="groupby" *ngIf="!showColumnsAndGroupBy" class="space-y-3">
+        <div class="flex items-center gap-2 mb-3">
+          <div class="w-6 h-6 bg-blue-100 rounded-md flex items-center justify-center">
+            <i class="pi pi-th-large text-green-500 text-xs"></i>
           </div>
-
-          <p-button icon="pi pi-trash" class="p-button-rounded p-button-outlined p-button-danger"
-            (click)="removeGrouping(i)" title="Remove Grouping">
-          </p-button>
-
+          <h5 class="text-sm font-medium text-gray-700">Grouping</h5>
         </div>
 
-        <p-button *ngIf="groupby.length === 0" icon="pi pi-plus-circle"
-          class="p-button-sm p-button-outline p-button-primary mt-2" (click)="addGrouping()" title="Add Grouping">
-        </p-button>
+        <div class="space-y-2">
+          <div *ngFor="let group of groupby.controls; let i = index" [formGroupName]="i"
+            class="flex items-start gap-2 p-2  rounded-md border border-gray-200">
+
+            <div class="flex-1 space-y-1">
+              <p-dropdown [options]="selectedcolumns" bindLabel="label" bindValue="column_name" formControlName="field"
+                placeholder="Select field" [showClear]="true"
+                class="w-full text-sm [&_.p-dropdown]:!text-sm [&_.p-dropdown]:!py-1.5 [&_.p-dropdown]:!px-2.5">
+              </p-dropdown>
+
+              <div *ngIf="group.get('field')?.invalid && group.get('field')?.touched"
+                class="text-red-500 text-xs flex items-center gap-1">
+                <i class="pi pi-exclamation-triangle text-xs"></i>
+                Field is required.
+              </div>
+            </div>
+
+            <button type="button" (click)="removeGrouping(i)" class="flex-shrink-0 w-7 h-7 bg-red-50 hover:bg-red-100 border border-red-200 hover:border-red-300 
+                     rounded-md flex items-center justify-center transition-colors duration-200 group"
+              title="Remove Grouping">
+              <i class="pi pi-trash text-red-500 text-xs group-hover:text-red-600"></i>
+            </button>
+          </div>
+
+          <!-- Add New Grouping Button -->
+          <div *ngIf="groupby.length === 0" class="text-center py-3">
+            <button type="button" (click)="addGrouping()" class="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-blue-600 
+                     bg-blue-50 hover:bg-blue-100 border border-blue-200 hover:border-blue-300 
+                     rounded-md transition-colors duration-200" title="Add Grouping">
+              <i class="pi pi-plus text-xs"></i>
+              Add Grouping
+            </button>
+          </div>
+        </div>
       </div>
 
-
       <!-- Sorting Section -->
-      <div formArrayName="sortby" class="space-y-4">
-        <h5 class="text-lg font-semibold text-gray-700 flex items-center gap-2">
-          <i class="bi bi-sort-alpha-down text-gray-500"></i> Sorting
-        </h5>
-
-        <div *ngFor="let sort of sortby.controls; let i = index" [formGroupName]="i"
-          class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
-
-          <!-- Field Dropdown -->
-          <div>
-            <p-dropdown [options]="selectedcolumns" bindLabel="label" bindValue="column_name" formControlName="field"
-              placeholder="Select Field" [showClear]="true" class="w-full">
-            </p-dropdown>
-
-
-            <div *ngIf="sort.get('field')?.invalid && sort.get('field')?.touched" class="text-red-500 text-sm mt-1">
-              Field is required.
-            </div>
+      <div formArrayName="sortby" class="space-y-3">
+        <div class="flex items-center gap-2 mb-3">
+          <div class="w-6 h-6 bg-gray-100 rounded-md flex items-center justify-center">
+            <i class="pi pi-sort text-green-600 text-xs"></i>
           </div>
-
-          <!-- Direction Dropdown -->
-          <div>
-            <p-dropdown [options]="[
-          { label: 'Ascending (A-Z)', value: 'asc' },
-          { label: 'Descending (Z-A)', value: 'desc' }
-        ]" formControlName="direction" placeholder="Sort Direction" [showClear]="true" class="w-full">
-            </p-dropdown>
-          </div>
-
-          <!-- Remove Button -->
-          <div class="flex justify-end">
-            <p-button icon="pi pi-trash" class="p-button-rounded p-button-outlined p-button-danger"
-              (click)="removeSorting(i)" title="Remove sorting">
-            </p-button>
-          </div>
-
+          <h5 class="text-sm font-medium text-gray-700">Sorting</h5>
         </div>
 
-        <!-- Add Sorting Button -->
+        <div class="space-y-2">
+          <div *ngFor="let sort of sortby.controls; let i = index" [formGroupName]="i"
+            class="flex items-start gap-2 p-2  rounded-md border border-gray-200">
 
-        <p-button *ngIf="sortby.length <=1 " icon="pi pi-plus-circle"
-          class="p-button-sm p-button-outline p-button-primary mt-2" (click)="addSorting()" title="Add Sorting">
-        </p-button>
+            <!-- Field Dropdown -->
+            <div class="flex-1 space-y-1">
+              <p-dropdown [options]="selectedcolumns" bindLabel="label" bindValue="column_name" formControlName="field"
+                placeholder="Select field" [showClear]="true"
+                class="w-full text-sm [&_.p-dropdown]:!text-sm [&_.p-dropdown]:!py-1.5 [&_.p-dropdown]:!px-2.5">
+              </p-dropdown>
 
+              <div *ngIf="sort.get('field')?.invalid && sort.get('field')?.touched"
+                class="text-red-500 text-xs flex items-center gap-1">
+                <i class="pi pi-exclamation-triangle text-xs"></i>
+                Field is required.
+              </div>
+            </div>
+
+            <!-- Direction Dropdown -->
+            <div class="w-40 space-y-1">
+              <p-dropdown [options]="[
+          { label: 'Ascending (A-Z)', value: 'asc' },
+          { label: 'Descending (Z-A)', value: 'desc' }
+        ]" formControlName="direction" placeholder="Sort Direction" [showClear]="true"
+                class="w-full text-sm [&_.p-dropdown]:!text-sm [&_.p-dropdown]:!py-1.5 [&_.p-dropdown]:!px-2.5">
+              </p-dropdown>
+            </div>
+
+            <!-- Remove Button -->
+            <button type="button" (click)="removeSorting(i)" class="flex-shrink-0 w-7 h-7 bg-red-50 hover:bg-red-100 border border-red-200 hover:border-red-300 
+               rounded-md flex items-center justify-center transition-colors duration-200 group"
+              title="Remove Sorting">
+              <i class="pi pi-trash text-red-500 text-xs group-hover:text-red-600"></i>
+            </button>
+          </div>
+
+          <!-- Add Sorting Button -->
+          <div *ngIf="sortby.length <= 1" class="text-center py-3">
+            <button type="button" (click)="addSorting()" class="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-blue-600 
+               bg-blue-50 hover:bg-blue-100 border border-blue-200 hover:border-blue-300 
+               rounded-md transition-colors duration-200" title="Add Sorting">
+              <i class="pi pi-plus text-xs"></i>
+              Add Sorting
+            </button>
+          </div>
+        </div>
       </div>
 
 
     </div>
+  </p-tabPanel>
+
+  <p-tabPanel header="Chart" *ngIf="showPreview && previewData.ischart">
+    <app-chart-component [chartDataArray]="previewData.chartData"
+      *ngIf="showPreview && previewData.ischart"></app-chart-component>
+  </p-tabPanel>
+
+  <p-tabPanel header="Summary" *ngIf="showPreview && !previewData.ischart">
+    <app-common-table *ngIf="showPreview && !previewData.ischart" [InputData]="previewData.data"
+      [israw]="!previewData.isGroup" [Inputgroupby]="previewData.groupBy" [group]="previewData.isGroup">
+    </app-common-table>
   </p-tabPanel>
 
   <p-dialog header="Save Report" [(visible)]="showSaveModal" [modal]="true" [closable]="false"
@@ -322,24 +505,25 @@
     </div>
   </p-dialog>
 
-  <app-chart-component [chartDataArray]="previewData.chartData"
-    *ngIf="showPreview && previewData.ischart"></app-chart-component>
-  <app-common-table *ngIf="showPreview && !previewData.ischart" [InputData]="previewData.data"
-    [israw]="!previewData.isGroup" [Inputgroupby]="previewData.groupBy" [group]="previewData.isGroup">
-  </app-common-table>
-
   <!-- Action Buttons -->
-  <div class="flex flex-wrap justify-end gap-3 mt-6">
+  <div class="flex flex-wrap justify-end gap-2 mt-4">
 
-    <button pButton type="button" label="Back" class="p-button-secondary" (click)="onBack()"></button>
+    <button pButton type="button" label="Back" class="p-button p-button-secondary text-xs px-3 py-1.5"
+      (click)="onBack()">
+    </button>
 
-    <button pButton type="button" label="Reset" class="p-button-warning" (click)="addNewReport()"></button>
+    <button pButton type="button" label="Reset" class="p-button p-button-warning text-xs px-3 py-1.5"
+      (click)="addNewReport()">
+    </button>
 
-    <button pButton type="button" label="Search" class="p-button-primary" (click)="previewReport()"></button>
+    <button pButton type="button" label="Search" class="p-button p-button-primary text-xs px-3 py-1.5"
+      (click)="previewReport()">
+    </button>
 
-    <button pButton type="button" label="Save" class="p-button-success" (click)="showSaveModal = true"></button>
+    <button pButton type="button" label="Save" class="p-button p-button-success text-xs px-3 py-1.5"
+      (click)="showSaveModal = true">
+    </button>
 
   </div>
-
-
+ 
 </p-tabView>

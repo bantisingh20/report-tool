@@ -1,15 +1,171 @@
-::ng-deep .green-theme .p-datatable-thead > tr > th {
-  background-color: #d1fae5;  
-  color: #065f46;  
-  font-weight: 600;
+/* ===== LIGHT THEME - TEAL COLORS ===== */
+
+/* Light Theme Table Header */
+:host ::ng-deep .light-theme .p-datatable .p-datatable-thead > tr > th {
+  background: linear-gradient(to right, #f0fdfa, #f8fafc) !important;
+  color: #374151 !important;
+  border-color: #d1d5db !important;
+  font-weight: 600 !important;
 }
 
-::ng-deep .green-theme .p-datatable-tbody > tr:nth-child(even) {
-  background-color: #f0fdf4;  
+/* Light Theme Even Rows */
+:host ::ng-deep .light-theme .p-datatable .p-datatable-tbody > tr:nth-child(even) {
+  background-color: #f0fdfa !important;
 }
 
-::ng-deep .green-theme .p-paginator .p-paginator-pages .p-paginator-page.p-highlight {
-  background: #22c55e;
-  color: white;
-  border: none;
+/* Light Theme Odd Rows */
+:host ::ng-deep .light-theme .p-datatable .p-datatable-tbody > tr:nth-child(odd) {
+  background-color: #ffffff !important;
+}
+
+/* Light Theme Row Hover */
+:host ::ng-deep .light-theme .p-datatable .p-datatable-tbody > tr:hover {
+  background-color: #ccfdf1 !important;
+  transform: translateY(-1px);
+  transition: all 0.2s ease;
+}
+
+/* Light Theme Row Text */
+:host ::ng-deep .light-theme .p-datatable .p-datatable-tbody > tr > td {
+  color: #1f2937 !important;
+  border-color: #e5e7eb !important;
+}
+
+/* ===== DARK THEME - GRAY COLORS ===== */
+
+/* Dark Theme Table Header */
+:host ::ng-deep .dark-theme .p-datatable .p-datatable-thead > tr > th {
+  background: linear-gradient(to right, #374151, #4b5563) !important;
+  color: #e5e7eb !important;
+  border-color: #4b5563 !important;
+  font-weight: 600 !important;
+}
+
+/* Dark Theme Even Rows */
+:host ::ng-deep .dark-theme .p-datatable .p-datatable-tbody > tr:nth-child(even) {
+  background-color: #374151 !important;
+}
+
+/* Dark Theme Odd Rows */
+:host ::ng-deep .dark-theme .p-datatable .p-datatable-tbody > tr:nth-child(odd) {
+  background-color: #4b5563 !important;
+}
+
+/* Dark Theme Row Hover */
+:host ::ng-deep .dark-theme .p-datatable .p-datatable-tbody > tr:hover {
+  background-color: #6b7280 !important;
+  transform: translateY(-1px);
+  transition: all 0.2s ease;
+}
+
+/* Dark Theme Row Text */
+:host ::ng-deep .dark-theme .p-datatable .p-datatable-tbody > tr > td {
+  color: #f3f4f6 !important;
+  border-color: #6b7280 !important;
+}
+
+/* ===== COMMON STYLES ===== */
+
+/* General Table Enhancements */
+:host ::ng-deep .p-datatable {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+/* Table Header Icons */
+:host ::ng-deep .p-datatable .p-datatable-thead > tr > th .pi {
+  margin-right: 0.5rem;
+}
+
+/* Table Cell Padding */
+:host ::ng-deep .p-datatable .p-datatable-tbody > tr > td,
+:host ::ng-deep .p-datatable .p-datatable-thead > tr > th {
+  padding: 0.75rem 1rem !important;
+  border-width: 1px !important;
+  border-style: solid !important;
+}
+
+/* Smooth Transitions */
+:host ::ng-deep .p-datatable .p-datatable-tbody > tr {
+  transition: all 0.15s ease-in-out !important;
+}
+
+/* Paginator Styling */
+:host ::ng-deep .light-theme .p-paginator {
+  background: #f8fafc !important;
+  border-color: #e5e7eb !important;
+  color: #374151 !important;
+}
+
+:host ::ng-deep .dark-theme .p-paginator {
+  background: #374151 !important;
+  border-color: #4b5563 !important;
+  color: #e5e7eb !important;
+}
+
+/* Paginator Buttons */
+:host ::ng-deep .light-theme .p-paginator .p-paginator-page,
+:host ::ng-deep .light-theme .p-paginator .p-paginator-next,
+:host ::ng-deep .light-theme .p-paginator .p-paginator-prev,
+:host ::ng-deep .light-theme .p-paginator .p-paginator-first,
+:host ::ng-deep .light-theme .p-paginator .p-paginator-last {
+  color: #0d9488 !important;
+  border-color: #14b8a6 !important;
+}
+
+:host ::ng-deep .dark-theme .p-paginator .p-paginator-page,
+:host ::ng-deep .dark-theme .p-paginator .p-paginator-next,
+:host ::ng-deep .dark-theme .p-paginator .p-paginator-prev,
+:host ::ng-deep .dark-theme .p-paginator .p-paginator-first,
+:host ::ng-deep .dark-theme .p-paginator .p-paginator-last {
+  color: #6b7280 !important;
+  border-color: #9ca3af !important;
+}
+
+/* Active Paginator Button */
+:host ::ng-deep .light-theme .p-paginator .p-paginator-page.p-highlight {
+  background: #0d9488 !important;
+  color: white !important;
+}
+
+:host ::ng-deep .dark-theme .p-paginator .p-paginator-page.p-highlight {
+  background: #6b7280 !important;
+  color: white !important;
+}
+
+/* Dropdown Styling */
+:host ::ng-deep .light-theme .p-dropdown {
+  background: #ffffff !important;
+  border-color: #d1d5db !important;
+  color: #374151 !important;
+}
+
+:host ::ng-deep .dark-theme .p-dropdown {
+  background: #4b5563 !important;
+  border-color: #6b7280 !important;
+  color: #e5e7eb !important;
+}
+
+/* Empty State Styling */
+:host ::ng-deep .p-datatable .p-datatable-tbody > tr.p-datatable-emptymessage > td {
+  text-align: center !important;
+  padding: 3rem 1rem !important;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  :host ::ng-deep .p-datatable .p-datatable-tbody > tr > td,
+  :host ::ng-deep .p-datatable .p-datatable-thead > tr > th {
+    padding: 0.5rem !important;
+    font-size: 0.875rem !important;
+  }
+  
+  :host ::ng-deep .p-datatable .p-datatable-thead > tr > th span {
+    font-size: 0.75rem !important;
+  }
+}
+
+tbody{
+  background-color: red !important;
 }

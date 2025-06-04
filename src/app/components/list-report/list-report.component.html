@@ -1,76 +1,816 @@
-<div class="p-4 space-y-4">
 
-  <!-- Header -->
- <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
-  <h3 class="text-xl font-semibold text-teal-700">Configuration Management</h3>
+<!-- versio 1 -->
+<div class="min-h-screen bg-gradient-to-br from-slate-50 to-teal-50/30 p-3 sm:p-6">
+  <div class="max-w-7xl mx-auto space-y-6">
+    
+    <!-- Header Section -->
+    <div class="bg-white/20 backdrop-blur-sm border border-teal-100 rounded-xl shadow-sm p-4 sm:p-6">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-gradient-to-br from-teal-500 to-teal-600 rounded-lg flex items-center justify-center">
+            <i class="pi pi-cog text-white text-lg"></i>
+          </div>
+          <div>
+            <h1 class="text-xl sm:text-2xl font-bold text-slate-800">Configuration Management</h1>
+            <p class="text-sm text-slate-600 mt-1">Manage and configure your reports</p>
+          </div>
+        </div>
 
-  <button 
-    type="button"
-    class="w-full md:w-auto flex items-center justify-center gap-2 border border-teal-500 text-teal-600 hover:bg-teal-50 hover:text-teal-700 font-medium rounded-md px-4 py-2 transition-colors duration-200"
-    (click)="CreateNewConfig()"
-  >
-    <i class="pi pi-plus"></i>
-    Create New Config
-  </button>
-</div>
-
-
-  <!-- Table Card -->
-  <div class=" rounded shadow p-4">
-    <div class="overflow-x-auto">
-      <p-table [value]="listData" [paginator]="true" [rows]="10"  
-        [responsiveLayout]="'scroll'" class="p-datatable-sm green-theme">
-        <ng-template pTemplate="header">
-          <tr>
-            <th class="text-center">Sr No</th>
-            <th>Report Name</th>
-            <th class="text-center">Actions</th>
-          </tr>
-        </ng-template>
-
-        <ng-template pTemplate="body" let-config let-rowIndex="rowIndex">
-          <tr>
-            <td class="text-center">{{ rowIndex + 1 }}</td>
-            <td>{{ config.report_name }}</td>
-            <td class="text-center">
-              <div class="flex flex-wrap justify-center gap-2">
-                <button pButton icon="pi pi-pencil" class="p-button-sm p-button-warning"
-                  (click)="goToEdit(config.report_id)" pTooltip="Edit Report"></button>
-
-                <button pButton icon="pi pi-eye" class="p-button-sm p-button-info text-white"
-                  (click)="previewConfig(config.report_id)" pTooltip="Report Preview"></button>
-
-                <button pButton icon="pi pi-trash" class="p-button-sm p-button-danger hidden"
-                  (click)="deleteConfig(config)" pTooltip="Delete Report"></button>
-              </div>
-            </td>
-          </tr>
-        </ng-template>
-      </p-table>
-    </div>
-  </div>
-
-  <!-- Modal (Preview) -->
-  <div *ngIf="showPreview" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-    <div class="bg-white w-full h-full flex flex-col overflow-hidden">
-
-      <div class="flex justify-between items-center px-4 py-3 border-b">
-        <h5 class="text-lg font-semibold">Report Preview</h5>
-        <button class="text-gray-600 hover:text-black" (click)="closeModal()">
-          <i class="pi pi-times text-xl"></i>
+        <button 
+          type="button"
+          class="w-full sm:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white font-medium rounded-lg px-4 py-2.5 transition-all duration-200 shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
+          (click)="CreateNewConfig()"
+          pTooltip="Create a new configuration report"
+          tooltipPosition="left"
+        >
+          <i class="pi pi-plus text-sm"></i>
+          <span class="text-sm font-medium">Create New Config</span>
         </button>
       </div>
+    </div>
 
-      <div class="flex-1 overflow-auto p-4">
-        <ng-container>
+    <!-- Stats Cards (Optional Enhancement) -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div class="bg-white/20 backdrop-blur-sm border border-teal-100 rounded-lg p-4 shadow-sm">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 bg-teal-100 rounded-lg flex items-center justify-center">
+            <i class="pi pi-chart-bar text-teal-600 text-sm"></i>
+          </div>
+          <div>
+            <p class="text-xs text-slate-600 uppercase tracking-wide">Total Reports</p>
+            <p class="text-lg font-bold text-slate-800">{{ listData?.length || 0 }}</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bg-white/20 backdrop-blur-sm border border-emerald-100 rounded-lg p-4 shadow-sm">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center">
+            <i class="pi pi-check-circle text-emerald-600 text-sm"></i>
+          </div>
+          <div>
+            <p class="text-xs text-slate-600 uppercase tracking-wide">Active</p>
+            <p class="text-lg font-bold text-slate-800">{{ listData?.length || 0 }}</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bg-white/20 backdrop-blur-sm border border-blue-100 rounded-lg p-4 shadow-sm">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+            <i class="pi pi-clock text-blue-600 text-sm"></i>
+          </div>
+          <div>
+            <p class="text-xs text-slate-600 uppercase tracking-wide">Last Updated</p>
+            <p class="text-sm font-medium text-slate-800">Today</p>
+          </div>
+        </div>
+      </div>
+    </div>
 
-          <app-chart-component [chartDataArray]="previewData.chartData"  *ngIf="showPreview && previewData.ischart"></app-chart-component> 
-          <app-common-table *ngIf="showPreview" [InputData]="previewData.data" [israw]="!previewData.isGroup"
-            [Inputgroupby]="previewData.groupBy" [group]="previewData.isGroup">
-          </app-common-table>
-        </ng-container>
+    <!-- Main Table Card -->
+    <div class="bg-white/20 backdrop-blur-sm border border-teal-100 rounded-xl shadow-sm overflow-hidden">
+      <div class="px-4 sm:px-6 py-4 border-b border-slate-100">
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-semibold text-slate-800 flex items-center gap-2">
+            <i class="pi pi-list text-teal-600"></i>
+            Reports List
+          </h3>
+          <span class="text-xs bg-teal-100 text-teal-700 px-2 py-1 rounded-full font-medium">
+            {{ listData?.length || 0 }} items
+          </span>
+        </div>
       </div>
 
+      <div class="overflow-x-auto">
+        <p-table 
+          [value]="listData" 
+          [paginator]="true" 
+          [rows]="10"
+          [rowsPerPageOptions]="[5, 10, 25, 50]"
+          [responsiveLayout]="'scroll'" 
+          styleClass="p-datatable-sm"
+          [tableStyle]="{'min-width': '50rem'}"
+          [showCurrentPageReport]="true"
+          currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        >
+          <ng-template pTemplate="header">
+            <tr class="bg-gradient-to-r from-teal-50 to-slate-50">
+              <th class="text-center !py-3 !px-4">
+                <span class="text-xs font-semibold text-slate-700 uppercase tracking-wide">Sr No</span>
+              </th>
+              <th class="!py-3 !px-4">
+                <span class="text-xs font-semibold text-slate-700 uppercase tracking-wide flex items-center gap-2">
+                  <i class="pi pi-file-text text-teal-600"></i>
+                  Report Name
+                </span>
+              </th>
+              <th class="text-center !py-3 !px-4">
+                <span class="text-xs font-semibold text-slate-700 uppercase tracking-wide">Actions</span>
+              </th>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="body" let-config let-rowIndex="rowIndex">
+            <tr class="hover:bg-teal-50/50 transition-colors duration-150 border-b border-slate-100">
+              <td class="text-center !py-3 !px-4">
+                <span class="inline-flex items-center justify-center w-6 h-6 bg-slate-100 text-slate-600 rounded-full text-xs font-medium">
+                  {{ rowIndex + 1 }}
+                </span>
+              </td>
+              <td class="!py-3 !px-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 bg-gradient-to-br from-teal-500 to-teal-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <i class="pi pi-chart-line text-white text-xs"></i>
+                  </div>
+                  <div>
+                    <p class="font-medium text-slate-800 text-sm">{{ config.report_name }}</p>
+                    <p class="text-xs text-slate-500">Report Configuration</p>
+                  </div>
+                </div>
+              </td>
+              <td class="text-center !py-3 !px-4">
+                <div class="flex flex-wrap justify-center gap-1.5">
+                  <button 
+                    pButton 
+                    icon="pi pi-pencil" 
+                    class="!p-1.5 !w-8 !h-8 !text-xs border border-amber-200 bg-amber-50 hover:bg-amber-100 text-amber-700 hover:text-amber-800 rounded-lg transition-all duration-200"
+                    (click)="goToEdit(config.report_id)" 
+                    pTooltip="Edit this report configuration"
+                    tooltipPosition="top"
+                  ></button>
+
+                  <button 
+                    pButton 
+                    icon="pi pi-eye" 
+                    class="!p-1.5 !w-8 !h-8 !text-xs border border-blue-200 bg-blue-50 hover:bg-blue-100 text-blue-700 hover:text-blue-800 rounded-lg transition-all duration-200"
+                    (click)="previewConfig(config.report_id)" 
+                    pTooltip="Preview report data and charts"
+                    tooltipPosition="top"
+                  ></button>
+
+                  <button 
+                    pButton 
+                    icon="pi pi-trash" 
+                    class="!p-1.5 !w-8 !h-8 !text-xs border border-red-200 bg-red-50 hover:bg-red-100 text-red-700 hover:text-red-800 rounded-lg transition-all duration-200 hidden"
+                    (click)="deleteConfig(config)" 
+                    pTooltip="Delete this report (Disabled)"
+                    tooltipPosition="top"
+                  ></button>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="3" class="text-center !py-12">
+                <div class="flex flex-col items-center gap-3">
+                  <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center">
+                    <i class="pi pi-inbox text-slate-400 text-2xl"></i>
+                  </div>
+                  <div>
+                    <p class="text-slate-600 font-medium">No configurations found</p>
+                    <p class="text-slate-500 text-sm mt-1">Create your first configuration to get started</p>
+                  </div>
+                  <button 
+                    type="button"
+                    class="flex items-center gap-2 bg-teal-500 hover:bg-teal-600 text-white font-medium rounded-lg px-4 py-2 text-sm transition-colors duration-200"
+                    (click)="CreateNewConfig()"
+                  >
+                    <i class="pi pi-plus text-xs"></i>
+                    Create First Config
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+
+    <!-- Enhanced Modal (Preview) -->
+    <div 
+      *ngIf="showPreview" 
+      class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-6"
+      (click)="closeModal()"
+    >
+      <div 
+        class="bg-white w-full max-w-6xl h-full max-h-[90vh] flex flex-col rounded-xl shadow-2xl overflow-hidden transform transition-all duration-300"
+        (click)="$event.stopPropagation()"
+      >
+        <!-- Modal Header -->
+        <div class="flex justify-between items-center px-4 sm:px-6 py-4 border-b border-slate-200 bg-gradient-to-r from-teal-50 to-slate-50">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 bg-gradient-to-br from-teal-500 to-teal-600 rounded-lg flex items-center justify-center">
+              <i class="pi pi-eye text-white text-sm"></i>
+            </div>
+            <div>
+              <h5 class="text-lg font-semibold text-slate-800">Report Preview</h5>
+              <p class="text-sm text-slate-600">Live data visualization</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <button 
+              class="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors duration-200"
+              (click)="closeModal()"
+              pTooltip="Close preview"
+              tooltipPosition="left"
+            >
+              <i class="pi pi-times text-lg"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Modal Content -->
+        <div class="flex-1 overflow-auto bg-gradient-to-br from-slate-50/50 to-white">
+          <div class="p-4 sm:p-6 space-y-6">
+            <ng-container>
+              <!-- Chart Section -->
+              <div *ngIf="showPreview && previewData.ischart" class="bg-white border border-slate-200 rounded-xl p-4 sm:p-6 shadow-sm">
+                <div class="flex items-center gap-2 mb-4">
+                  <i class="pi pi-chart-bar text-teal-600"></i>
+                  <h6 class="font-semibold text-slate-800">Chart Visualization</h6>
+                </div>
+                <app-chart-component [chartDataArray]="previewData.chartData"></app-chart-component>
+              </div>
+
+              <!-- Table Section -->
+              <div *ngIf="showPreview" class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                <div class="flex items-center gap-2 px-4 sm:px-6 py-4 border-b border-slate-200">
+                  <i class="pi pi-table text-teal-600"></i>
+                  <h6 class="font-semibold text-slate-800">Data Table</h6>
+                  <span class="ml-auto text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-full">
+                    {{ previewData.isGroup ? 'Grouped' : 'Raw' }} Data
+                  </span>
+                </div>
+                <div class="overflow-auto">
+                  <app-common-table 
+                    [InputData]="previewData.data" 
+                    [israw]="!previewData.isGroup"
+                    [Inputgroupby]="previewData.groupBy" 
+                    [group]="previewData.isGroup">
+                  </app-common-table>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="px-4 sm:px-6 py-4 border-t border-slate-200 bg-slate-50/50">
+          <div class="flex justify-end gap-3">
+            <button 
+              type="button"
+              class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-800 hover:bg-white border border-slate-300 rounded-lg transition-colors duration-200"
+              (click)="closeModal()"
+            >
+              Close
+            </button>
+            <button 
+              type="button"
+              class="px-4 py-2 text-sm font-medium text-white bg-teal-500 hover:bg-teal-600 rounded-lg transition-colors duration-200 flex items-center gap-2"
+            >
+              <i class="pi pi-download text-xs"></i>
+              Export
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
+<!-- versio 2 -->
+<div class="hidden min-h-screen bg-gradient-to-br from-surface-50 to-teal-50/30 dark:from-surface-900 dark:to-teal-900/20 p-3 sm:p-6">
+  <div class="max-w-7xl mx-auto space-y-6">
+    
+    <!-- Header Section -->
+    <div class="surface-card border border-surface-200 dark:border-surface-700 rounded-xl shadow-sm p-4 sm:p-6">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-gradient-to-br from-teal-500 to-teal-600 rounded-lg flex items-center justify-center">
+            <i class="pi pi-cog text-white text-lg"></i>
+          </div>
+          <div>
+            <h1 class="text-xl sm:text-2xl font-bold text-surface-900 dark:text-surface-50">Configuration Management</h1>
+            <p class="text-sm text-surface-600 dark:text-surface-400 mt-1">Manage and configure your reports</p>
+          </div>
+        </div>
+
+        <button 
+          type="button"
+          class="w-full sm:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white font-medium rounded-lg px-4 py-2.5 transition-all duration-200 shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
+          (click)="CreateNewConfig()"
+          pTooltip="Create a new configuration report"
+          tooltipPosition="left"
+        >
+          <i class="pi pi-plus text-sm"></i>
+          <span class="text-sm font-medium">Create New Config</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div class="surface-card border border-surface-200 dark:border-surface-700 rounded-lg p-4 shadow-sm">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 bg-teal-100 dark:bg-teal-800/50 rounded-lg flex items-center justify-center">
+            <i class="pi pi-chart-bar text-teal-600 dark:text-teal-400 text-sm"></i>
+          </div>
+          <div>
+            <p class="text-xs text-surface-600 dark:text-surface-400 uppercase tracking-wide">Total Reports</p>
+            <p class="text-lg font-bold text-surface-900 dark:text-surface-50">{{ listData?.length || 0 }}</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="surface-card border border-surface-200 dark:border-surface-700 rounded-lg p-4 shadow-sm">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 bg-emerald-100 dark:bg-emerald-800/50 rounded-lg flex items-center justify-center">
+            <i class="pi pi-check-circle text-emerald-600 dark:text-emerald-400 text-sm"></i>
+          </div>
+          <div>
+            <p class="text-xs text-surface-600 dark:text-surface-400 uppercase tracking-wide">Active</p>
+            <p class="text-lg font-bold text-surface-900 dark:text-surface-50">{{ listData?.length || 0 }}</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="surface-card border border-surface-200 dark:border-surface-700 rounded-lg p-4 shadow-sm">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 bg-blue-100 dark:bg-blue-800/50 rounded-lg flex items-center justify-center">
+            <i class="pi pi-clock text-blue-600 dark:text-blue-400 text-sm"></i>
+          </div>
+          <div>
+            <p class="text-xs text-surface-600 dark:text-surface-400 uppercase tracking-wide">Last Updated</p>
+            <p class="text-sm font-medium text-surface-900 dark:text-surface-50">Today</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Table Card -->
+    <div class="surface-card border border-surface-200 dark:border-surface-700 rounded-xl shadow-sm overflow-hidden">
+      <div class="px-4 sm:px-6 py-4 border-b border-surface-200 dark:border-surface-700">
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-50 flex items-center gap-2">
+            <i class="pi pi-list text-teal-600 dark:text-teal-400"></i>
+            Reports List
+          </h3>
+          <span class="text-xs bg-teal-100 dark:bg-teal-800/50 text-teal-700 dark:text-teal-300 px-2 py-1 rounded-full font-medium">
+            {{ listData?.length || 0 }} items
+          </span>
+        </div>
+      </div>
+
+      <div class="overflow-x-auto">
+        <p-table 
+          [value]="listData" 
+          [paginator]="true" 
+          [rows]="10"
+          [rowsPerPageOptions]="[5, 10, 25, 50]"
+          [responsiveLayout]="'scroll'" 
+          styleClass="p-datatable-sm"
+          [tableStyle]="{'min-width': '50rem'}"
+          [showCurrentPageReport]="true"
+          currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        >
+          <ng-template pTemplate="header">
+            <tr class="bg-gradient-to-r from-teal-50 dark:from-teal-900/30 to-surface-50 dark:to-surface-800">
+              <th class="text-center !py-3 !px-4">
+                <span class="text-xs font-semibold text-surface-700 dark:text-surface-300 uppercase tracking-wide">Sr No</span>
+              </th>
+              <th class="!py-3 !px-4">
+                <span class="text-xs font-semibold text-surface-700 dark:text-surface-300 uppercase tracking-wide flex items-center gap-2">
+                  <i class="pi pi-file-text text-teal-600 dark:text-teal-400"></i>
+                  Report Name
+                </span>
+              </th>
+              <th class="text-center !py-3 !px-4">
+                <span class="text-xs font-semibold text-surface-700 dark:text-surface-300 uppercase tracking-wide">Actions</span>
+              </th>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="body" let-config let-rowIndex="rowIndex">
+            <tr class="hover:bg-teal-50/50 dark:hover:bg-teal-900/20 transition-colors duration-150 border-b border-surface-200 dark:border-surface-700">
+              <td class="text-center !py-3 !px-4">
+                <span class="inline-flex items-center justify-center w-6 h-6 bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 rounded-full text-xs font-medium">
+                  {{ rowIndex + 1 }}
+                </span>
+              </td>
+              <td class="!py-3 !px-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 bg-gradient-to-br from-teal-500 to-teal-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <i class="pi pi-chart-line text-white text-xs"></i>
+                  </div>
+                  <div>
+                    <p class="font-medium text-surface-900 dark:text-surface-50 text-sm">{{ config.report_name }}</p>
+                    <p class="text-xs text-surface-500 dark:text-surface-400">Report Configuration</p>
+                  </div>
+                </div>
+              </td>
+              <td class="text-center !py-3 !px-4">
+                <div class="flex flex-wrap justify-center gap-1.5">
+                  <button 
+                    pButton 
+                    icon="pi pi-pencil" 
+                    class="!p-1.5 !w-8 !h-8 !text-xs border border-amber-200 dark:border-amber-700 bg-amber-50 dark:bg-amber-900/30 hover:bg-amber-100 dark:hover:bg-amber-800/50 text-amber-700 dark:text-amber-300 hover:text-amber-800 dark:hover:text-amber-200 rounded-lg transition-all duration-200"
+                    (click)="goToEdit(config.report_id)" 
+                    pTooltip="Edit this report configuration"
+                    tooltipPosition="top"
+                  ></button>
+
+                  <button 
+                    pButton 
+                    icon="pi pi-eye" 
+                    class="!p-1.5 !w-8 !h-8 !text-xs border border-blue-200 dark:border-blue-700 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-800/50 text-blue-700 dark:text-blue-300 hover:text-blue-800 dark:hover:text-blue-200 rounded-lg transition-all duration-200"
+                    (click)="previewConfig(config.report_id)" 
+                    pTooltip="Preview report data and charts"
+                    tooltipPosition="top"
+                  ></button>
+
+                  <button 
+                    pButton 
+                    icon="pi pi-trash" 
+                    class="!p-1.5 !w-8 !h-8 !text-xs border border-red-200 dark:border-red-700 bg-red-50 dark:bg-red-900/30 hover:bg-red-100 dark:hover:bg-red-800/50 text-red-700 dark:text-red-300 hover:text-red-800 dark:hover:text-red-200 rounded-lg transition-all duration-200 hidden"
+                    (click)="deleteConfig(config)" 
+                    pTooltip="Delete this report (Disabled)"
+                    tooltipPosition="top"
+                  ></button>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="3" class="text-center !py-12">
+                <div class="flex flex-col items-center gap-3">
+                  <div class="w-16 h-16 bg-surface-100 dark:bg-surface-800 rounded-full flex items-center justify-center">
+                    <i class="pi pi-inbox text-surface-400 dark:text-surface-500 text-2xl"></i>
+                  </div>
+                  <div>
+                    <p class="text-surface-600 dark:text-surface-400 font-medium">No configurations found</p>
+                    <p class="text-surface-500 dark:text-surface-500 text-sm mt-1">Create your first configuration to get started</p>
+                  </div>
+                  <button 
+                    type="button"
+                    class="flex items-center gap-2 bg-teal-500 hover:bg-teal-600 text-white font-medium rounded-lg px-4 py-2 text-sm transition-colors duration-200"
+                    (click)="CreateNewConfig()"
+                  >
+                    <i class="pi pi-plus text-xs"></i>
+                    Create First Config
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+
+    <!-- Enhanced Modal (Preview) -->
+    <div 
+      *ngIf="showPreview" 
+      class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-6"
+      (click)="closeModal()"
+    >
+      <div 
+        class="surface-card w-full max-w-6xl h-full max-h-[90vh] flex flex-col rounded-xl shadow-2xl overflow-hidden transform transition-all duration-300"
+        (click)="$event.stopPropagation()"
+      >
+        <!-- Modal Header -->
+        <div class="flex justify-between items-center px-4 sm:px-6 py-4 border-b border-surface-200 dark:border-surface-700 bg-gradient-to-r from-teal-50 dark:from-teal-900/30 to-surface-50 dark:to-surface-800">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 bg-gradient-to-br from-teal-500 to-teal-600 rounded-lg flex items-center justify-center">
+              <i class="pi pi-eye text-white text-sm"></i>
+            </div>
+            <div>
+              <h5 class="text-lg font-semibold text-surface-900 dark:text-surface-50">Report Preview</h5>
+              <p class="text-sm text-surface-600 dark:text-surface-400">Live data visualization</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <button 
+              class="w-8 h-8 flex items-center justify-center text-surface-400 dark:text-surface-500 hover:text-surface-600 dark:hover:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800 rounded-lg transition-colors duration-200"
+              (click)="closeModal()"
+              pTooltip="Close preview"
+              tooltipPosition="left"
+            >
+              <i class="pi pi-times text-lg"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Modal Content -->
+        <div class="flex-1 overflow-auto bg-gradient-to-br from-surface-50/50 dark:from-surface-900/50 to-surface-0 dark:to-surface-900">
+          <div class="p-4 sm:p-6 space-y-6">
+            <ng-container>
+              <!-- Chart Section -->
+              <div *ngIf="showPreview && previewData.ischart" class="surface-card border border-surface-200 dark:border-surface-700 rounded-xl p-4 sm:p-6 shadow-sm">
+                <div class="flex items-center gap-2 mb-4">
+                  <i class="pi pi-chart-bar text-teal-600 dark:text-teal-400"></i>
+                  <h6 class="font-semibold text-surface-900 dark:text-surface-50">Chart Visualization</h6>
+                </div>
+                <app-chart-component [chartDataArray]="previewData.chartData"></app-chart-component>
+              </div>
+
+              <!-- Table Section -->
+              <div *ngIf="showPreview" class="surface-card border border-surface-200 dark:border-surface-700 rounded-xl overflow-hidden shadow-sm">
+                <div class="flex items-center gap-2 px-4 sm:px-6 py-4 border-b border-surface-200 dark:border-surface-700">
+                  <i class="pi pi-table text-teal-600 dark:text-teal-400"></i>
+                  <h6 class="font-semibold text-surface-900 dark:text-surface-50">Data Table</h6>
+                  <span class="ml-auto text-xs bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 px-2 py-1 rounded-full">
+                    {{ previewData.isGroup ? 'Grouped' : 'Raw' }} Data
+                  </span>
+                </div>
+                <div class="overflow-auto">
+                  <app-common-table 
+                    [InputData]="previewData.data" 
+                    [israw]="!previewData.isGroup"
+                    [Inputgroupby]="previewData.groupBy" 
+                    [group]="previewData.isGroup">
+                  </app-common-table>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="px-4 sm:px-6 py-4 border-t border-surface-200 dark:border-surface-700 bg-surface-50/50 dark:bg-surface-800/50">
+          <div class="flex justify-end gap-3">
+            <button 
+              type="button"
+              class="px-4 py-2 text-sm font-medium text-surface-600 dark:text-surface-400 hover:text-surface-800 dark:hover:text-surface-200 hover:bg-surface-0 dark:hover:bg-surface-900 border border-surface-300 dark:border-surface-600 rounded-lg transition-colors duration-200"
+              (click)="closeModal()"
+            >
+              Close
+            </button>
+            <button 
+              type="button"
+              class="px-4 py-2 text-sm font-medium text-white bg-teal-500 hover:bg-teal-600 rounded-lg transition-colors duration-200 flex items-center gap-2"
+            >
+              <i class="pi pi-download text-xs"></i>
+              Export
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 
+<div style="text-align: center">
+    <h2 style="color: green">GeeksforGeeks</h2>
+    <h4>Angular PrimeNG Table Row Group</h4>
+
+    <p-table
+        [value]="companyProfiles" 
+        rowGroupMode="subheader" 
+        groupRowsBy="sector" 
+        [scrollable]="true" 
+        scrollHeight="350px">
+        <ng-template pTemplate="header">
+            <tr>
+                <th style="min-width:200px">
+                      Company</th>
+                <th style="min-width:200px">
+                      This Year Sales</th>
+                <th style="min-width:200px">
+                      Last Year Sales</th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="groupheader" let-company>
+            <tr pRowGroupHeader>
+                <td colspan="3">
+                    <span class="font-bold">
+                          {{company.sector}}</span>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" 
+            let-company>
+            <tr>
+                <td style="min-width:200px">
+                    {{company.name}}
+                </td>
+                <td style="min-width:200px">
+                    {{company.thisYearSales}}
+                </td>
+                <td style="min-width:200px">
+                    {{company.lastYearSales}}
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+
+
+<div style="text-align: center">
+    <h2 style="color: green">GeeksforGeeks</h2>
+    <h4>Angular PrimeNG Table Row Group</h4>
+
+    <p-table
+        [value]="companyProfiles" 
+        rowGroupMode="subheader" 
+        groupRowsBy="sector" 
+        dataKey="sector">
+        <ng-template pTemplate="header">
+            <tr>
+                <th style="min-width:200px">
+                    Company
+                </th>
+                <th style="min-width:200px">
+                    This Year Sales
+                </th>
+                <th style="min-width:200px">
+                    Last Year Sales
+                </th>
+            </tr>
+        </ng-template>
+        <ng-template 
+            pTemplate="groupheader" 
+            let-company 
+            let-isExpanded="expanded">
+            <tr>
+                <td colspan="3">
+                    <button type="button" pButton pRipple 
+                        [pRowToggler]="company"
+                        class="p-button-text 
+                        p-button-rounded p-button-plain mr-4" 
+                        [icon]="isExpanded ? 
+                        'pi pi-chevron-down' : 
+                        'pi pi-chevron-right'">
+                    </button>
+                    <span class="font-bold">
+                        {{company.sector}}
+                    </span>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="rowexpansion" let-company>
+            <tr>
+                <td style="min-width:200px">
+                    {{company.name}}
+                </td>
+                <td style="min-width:200px">
+                    {{company.thisYearSales}}
+                </td>
+                <td style="min-width:200px">
+                    {{company.lastYearSales}}
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+
+
+
+
+<div style="text-align: center">
+    <h2 style="color: green">GeeksforGeeks</h2>
+    <h4>Angular PrimeNG Table Row Group</h4>
+
+    <p-table
+        [value]="companyProfiles" 
+        rowGroupMode="rowspan" 
+        responsiveLayout="scroll"
+        groupRowsBy="sector" 
+        dataKey="sector">
+        <ng-template pTemplate="header">
+            <tr>
+                <th>Sector</th>
+                <th>Company</th>
+                <th>This Year Sales</th>
+                <th>Last Year Sales</th>
+            </tr>
+        </ng-template>
+        <ng-template 
+            pTemplate="body" 
+            let-company 
+            let-rowgroup="rowgroup" 
+            let-rowspan="rowspan">
+            <tr>
+                <td 
+                    *ngIf="rowgroup" 
+                    [attr.rowspan]="rowspan">
+                    <span class="font-bold">
+                        {{company.sector}}
+                    </span>
+                </td>
+                <td>{{company.name}}</td>
+                <td>{{company.thisYearSales}}</td>
+                <td>{{company.lastYearSales}}</td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div> -->
