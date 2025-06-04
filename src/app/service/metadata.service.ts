@@ -24,11 +24,11 @@ export class MetadataService {
   }
 
   getTablesLinkTable(selectedTables: any[]) {
-  return this.http.post<any>(`${this.apiUrl}/check-table-relations`, { selectedTables });
-}
+    return this.http.post<any>(`${this.apiUrl}/check-table-relations`, { selectedTables });
+  }
 
 
-  getAvailableFieldsForTables(selectedTables: string[]) : Observable<any[]>{
+  getAvailableFieldsForTables(selectedTables: string[]): Observable<any[]> {
     return this.http.post<any>(`${this.apiUrl}/check-table-relations`, { selectedTables }).pipe(
       map((result: { columnsByTable: { [key: string]: any[] } }) => {
         const columnsByTable = result.columnsByTable || {};
@@ -60,103 +60,40 @@ export class MetadataService {
     console.log('Request Payload:', config);
     return this.http.post<string[]>(`${this.apiUrl}/report/preview`, config);
   }
-
-  // processPreviewData(responseData: any) {
-
-  //   const rawData = responseData?.data || [];
-  //   const groupBy = responseData?.groupBy || null;
-  //   const chartData = responseData?.count || null;
-
-  //   console.log(responseData)
-  //   // Grouped data case
-  //   if (Array.isArray(groupBy) && groupBy.length > 0 && Array.isArray(rawData) && rawData[0]?.records) {
-  //     const firstRecord = rawData[0]?.records?.[0];
-
-  //     return {
-  //       groupBy,
-  //       data: rawData,
-  //       chartData,
-  //       displayedColumns: firstRecord ? Object.keys(firstRecord) : [],
-  //       showPreview: true
-  //     };
-  //   }
-
-  //   // Flat data case
-  //   else if (Array.isArray(responseData) && responseData.length > 0) {
-  //     const firstItem = responseData[0];
-
-  //     return {
-  //       data: responseData,
-  //       chartData,
-  //       displayedColumns: firstItem ? Object.keys(firstItem) : [],
-  //       showPreview: true
-  //     };
-  //   }
-
-  //   // No data
-  //   else {
-  //     return {
-  //       data: [],
-  //       chartData: [],
-  //       displayedColumns: [],
-  //       showPreview: false
-  //     };
-  //   }
-  // }
-
-
-
+ 
   processPreviewData(responseData: any) {
 
     const rawData = responseData?.data || [];
     const groupBy = responseData?.group || false; // true if data is grouped, false if not
     const ischart = responseData?.count || false; // true if count data is available
     const isRaw = responseData?.raw || false; // true if raw data is present
-    const chartData = responseData?.chart || [] ; // true if count data is available
- 
-    console.log('service',rawData)
-    console.log('service console',responseData);
+    const chartData = responseData?.chart || []; // true if count data is available
 
-    // Handle grouped data case (groupBy is true)
-    if (groupBy) {
-        // If data is grouped and has records (rawData is an array of objects with records)
-        if (Array.isArray(rawData) && rawData.length > 0 && rawData[0]?.records) {
-            const firstRecord = rawData[0]?.records[0];
+    console.log('service', rawData)
+    console.log('service console', responseData);
 
-            return {
-                groupBy: responseData?.groupBy,
-                data: rawData,
-                chartData, 
-                ischart,
-                displayedColumns: firstRecord ? Object.keys(firstRecord) : [],
-                showPreview: true
-            };
-        }
+    if (Array.isArray(rawData) && rawData.length > 0) {
+      const firstItem = rawData[0];
+
+      return {
+        ischart,
+        isGroup :groupBy,
+        isRaw,
+        data: rawData,
+        chartData,        
+        groupBy: responseData?.groupBy,
+        displayedColumns: firstItem ? Object.keys(firstItem) : [],
+        showPreview: true
+      };
     }
-    
-    // Handle flat data case (groupBy is false)
-    else {
-        if (Array.isArray(rawData) && rawData.length > 0) {
-            const firstItem = rawData[0];
-
-            return {
-                data: rawData,
-                chartData, 
-                ischart,
-                displayedColumns: firstItem ? Object.keys(firstItem) : [],
-                showPreview: true
-            };
-        }
-    }
-
     // Handle the case where there is no data or incomplete data
     return {
-        data: [],
-        chartData: [],
-        displayedColumns: [],
-        showPreview: false
+      data: [],
+      chartData: [],
+      displayedColumns: [],
+      showPreview: false
     };
-}
+  }
 
   SaveReportForamt(report: any) {
     return this.http.post(`${this.apiUrl}/report/save/0`, report);

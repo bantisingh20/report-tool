@@ -1,1 +1,76 @@
-<p>list-report works!</p>
+<div class="p-4 space-y-4">
+
+  <!-- Header -->
+ <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+  <h3 class="text-xl font-semibold text-teal-700">Configuration Management</h3>
+
+  <button 
+    type="button"
+    class="w-full md:w-auto flex items-center justify-center gap-2 border border-teal-500 text-teal-600 hover:bg-teal-50 hover:text-teal-700 font-medium rounded-md px-4 py-2 transition-colors duration-200"
+    (click)="CreateNewConfig()"
+  >
+    <i class="pi pi-plus"></i>
+    Create New Config
+  </button>
+</div>
+
+
+  <!-- Table Card -->
+  <div class=" rounded shadow p-4">
+    <div class="overflow-x-auto">
+      <p-table [value]="listData" [paginator]="true" [rows]="10"  
+        [responsiveLayout]="'scroll'" class="p-datatable-sm green-theme">
+        <ng-template pTemplate="header">
+          <tr>
+            <th class="text-center">Sr No</th>
+            <th>Report Name</th>
+            <th class="text-center">Actions</th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-config let-rowIndex="rowIndex">
+          <tr>
+            <td class="text-center">{{ rowIndex + 1 }}</td>
+            <td>{{ config.report_name }}</td>
+            <td class="text-center">
+              <div class="flex flex-wrap justify-center gap-2">
+                <button pButton icon="pi pi-pencil" class="p-button-sm p-button-warning"
+                  (click)="goToEdit(config.report_id)" pTooltip="Edit Report"></button>
+
+                <button pButton icon="pi pi-eye" class="p-button-sm p-button-info text-white"
+                  (click)="previewConfig(config.report_id)" pTooltip="Report Preview"></button>
+
+                <button pButton icon="pi pi-trash" class="p-button-sm p-button-danger hidden"
+                  (click)="deleteConfig(config)" pTooltip="Delete Report"></button>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+
+  <!-- Modal (Preview) -->
+  <div *ngIf="showPreview" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+    <div class="bg-white w-full h-full flex flex-col overflow-hidden">
+
+      <div class="flex justify-between items-center px-4 py-3 border-b">
+        <h5 class="text-lg font-semibold">Report Preview</h5>
+        <button class="text-gray-600 hover:text-black" (click)="closeModal()">
+          <i class="pi pi-times text-xl"></i>
+        </button>
+      </div>
+
+      <div class="flex-1 overflow-auto p-4">
+        <ng-container>
+
+          <app-chart-component [chartDataArray]="previewData.chartData"  *ngIf="showPreview && previewData.ischart"></app-chart-component> 
+          <app-common-table *ngIf="showPreview" [InputData]="previewData.data" [israw]="!previewData.isGroup"
+            [Inputgroupby]="previewData.groupBy" [group]="previewData.isGroup">
+          </app-common-table>
+        </ng-container>
+      </div>
+
+    </div>
+  </div>
+</div>

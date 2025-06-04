@@ -11,7 +11,9 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { DialogModule } from 'primeng/dialog';
 import { TableModule  } from 'primeng/table';
 import { PaginatorModule } from 'primeng/paginator';
-
+import { SelectModule } from 'primeng/select';
+import { InputTextModule } from 'primeng/inputtext';
+import { ChartModule } from 'primeng/chart';
 
 @NgModule({
   imports: [
@@ -27,6 +29,10 @@ import { PaginatorModule } from 'primeng/paginator';
     TableModule ,
     DialogModule,
     PaginatorModule,
+    SelectModule,
+    InputTextModule,
+    InputTextModule,
+    ChartModule,
     ReactiveFormsModule
   ],
   exports: [
@@ -41,6 +47,9 @@ import { PaginatorModule } from 'primeng/paginator';
     TableModule ,
     DialogModule,
     PaginatorModule,
+    SelectModule,
+    InputTextModule,
+    ChartModule,
     ReactiveFormsModule
   ]
 })

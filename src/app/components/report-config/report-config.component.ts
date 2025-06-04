@@ -6,21 +6,18 @@ import { SharedModule } from '../../shared/shared.module';
 import { MetadataService } from '../../service/metadata.service';
 import { ReportConfigService } from '../../service/report-config.service';
 import { CommonTableComponent } from "../common-table/common-table.component";
+import { ChartComponentComponent } from '../chart-component/chart-component.component';
 
 
 declare var bootstrap: any;
 @Component({
   selector: 'app-report-config',
-  imports: [SharedModule, CommonTableComponent],
+  imports: [SharedModule, CommonTableComponent, ChartComponentComponent],
   templateUrl: './report-config.component.html',
   styleUrl: './report-config.component.css'
 })
 
 export class ReportConfigComponent implements OnInit {
-
-  onBack() {
-    throw new Error('Method not implemented.');
-  }
 
   showSaveModal = false;
   originalTablesAndViews: any[] = [];
@@ -59,6 +56,17 @@ export class ReportConfigComponent implements OnInit {
   showXYConfig: boolean = true;
   reportId: string | null = null;
   mode: string | null = null;
+  xAxisDirectionOptions = [
+    { label: 'Ascending (A-Z, small to large)', value: 'asc' },
+    { label: 'Descending (Z-A, large to small)', value: 'desc' }
+  ];
+  operatorsByRow: { [key: number]: string[] } = {};
+  xAxisTransformationOptions = [
+    { label: 'Day-wise', value: 'daywise' },
+    { label: 'Month-wise', value: 'monthwise' },
+    { label: 'Yearly', value: 'yearwise' }
+  ];
+
 
   reportForm = new FormGroup({
     fieldtype: new FormControl('summary', Validators.required),
@@ -78,20 +86,7 @@ export class ReportConfigComponent implements OnInit {
     private reprotconfig: ReportConfigService) { }
 
 
-  onConfirmSave() {
-    if (this.reportForm.invalid) {
-      this.reportForm.markAllAsTouched();
-      return;
-    }
-
-    const reportname = this.reportForm.value.reportname;
-    const reportData = this.reportForm.value;
-
-    console.log('Saving report:', reportname, reportData);
-    this.showSaveModal = false;
-    // Save logic...
-  }
-
+  //#region On page load initial setup
   ngOnInit() {
     this.availableFields = [];
     this.selectedcolumns = [];
@@ -119,29 +114,13 @@ export class ReportConfigComponent implements OnInit {
 
 
 
-  onFieldTypeChange() {
-    const fieldType = this.reportForm.get('fieldtype')?.value;
 
-    // Show/Hide sections based on selection
-    if (fieldType === 'count') {
-      this.showColumnsAndGroupBy = false;
-      this.showXYConfig = true;
-      console.log(this.availableFields);
-      this.selectedcolumns = [...this.availableFields];
-      this.reportForm.get('selectedcolumns')?.clearValidators();
-      this.reportForm.get('selectedcolumns')?.updateValueAndValidity();
-    } else if (fieldType === 'summary') {
-      this.showColumnsAndGroupBy = true;
-      this.showXYConfig = false;
-      this.reportForm.get('selectedcolumns')?.setValidators([Validators.required]);
-      this.reportForm.get('selectedcolumns')?.updateValueAndValidity();
-    }
-  }
 
   loadReportData(id: string): void {
     this.metadataService.getReportById(id).subscribe((response: any) => {
       const data = response.report;
 
+      console.log(data);
       this.reportForm.patchValue({
         fieldtype: data.fieldtype,
         tableandview: data.table_name,
@@ -164,135 +143,36 @@ export class ReportConfigComponent implements OnInit {
       });
     });
   }
+  //#endregion
+ 
+ //#region  Radio butotn change
+  onFieldTypeChange() {
+    const fieldType = this.reportForm.get('fieldtype')?.value;
 
-  parsePostgresArray(input: string): string[] {
-    // Remove the surrounding curly braces and quotes
-    return input
-      .replace(/^{|}$/g, '')      // Remove leading and trailing curly braces
-      .split(',')                 // Split by commas
-      .map(item => item.replace(/^"(.*)"$/, '$1')); // Remove double quotes around each item
-  }
+    console.log(fieldType);
 
-  closeFilterDrawer() {
-    // Optional: Close offcanvas programmatically if needed
-    const offcanvasElement = document.getElementById('filterDrawer');
-    const bsOffcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement);
-    bsOffcanvas?.hide();
-  }
-
-  onFilterSaved() {
-    const offcanvas = document.getElementById('filterDrawer');
-    const bsInstance = bootstrap.Offcanvas.getInstance(offcanvas);
-    bsInstance?.hide();
-  }
-
-
-  setFormArray(key: string, values: any[]): void {
-    const formArray = this.reportForm.get(key) as FormArray;
-    formArray.clear();
-
-    if (values && values.length > 0) {
-      values.forEach(val => {
-
-        if (typeof val === 'string') {
-          try {
-            val = JSON.parse(val);
-          } catch (e) {
-            console.error('Error parsing JSON:', val);
-            return;
-          }
-        }
-
-
-        if (typeof val === 'object' && !Array.isArray(val)) {
-          const group = new FormGroup({});
-          for (const key in val) {
-            if (val.hasOwnProperty(key)) {
-              group.addControl(key, new FormControl(val[key]));
-            }
-          }
-          formArray.push(group);
-        } else {
-          formArray.push(new FormControl(val));
-        }
-      });
+    if (fieldType === 'count') {
+      this.showColumnsAndGroupBy = false;
+      this.showXYConfig = true;
+      console.log(this.availableFields);
+      this.selectedcolumns = [...this.availableFields];
+      this.reportForm.get('selectedcolumns')?.setValue([]);
+      this.reportForm.get('selectedcolumns')?.clearValidators();
+      this.reportForm.get('selectedcolumns')?.updateValueAndValidity();
+    } else if (fieldType === 'summary') {
+      this.showColumnsAndGroupBy = true;
+      this.showXYConfig = false;
+      this.reportForm.get('selectedcolumns')?.setValidators([Validators.required]);
+      this.reportForm.get('selectedcolumns')?.updateValueAndValidity();
     }
-
-    // console.log(formArray); // For debugging: check the form array structure
   }
 
+ // #endregion
 
 
-
-
-  createFilter(): FormGroup {
-    return this.fb.group({
-      field: [null, Validators.required],
-      operator: ['', Validators.required],
-      value: [''],
-      valueFrom: [''],
-      valueTo: [''],
-      selectedField: null
-    });
-  }
-
-  dropdownCloseFunction() {
-    // Your logic here
-    console.log('Dropdown closed!');
-  }
-
-
-
-  onDropdownClose(): void {
-    const selectedTables = this.reportForm.get('tableandview')?.value || [];
-
-    if (selectedTables.length === 0) {
-      this.tablesAndViews = [...this.originalTablesAndViews];
-      return;
-    }
-
-    this.metadataService.getAvailableFieldsForTables(selectedTables).subscribe((fields: any[]) => {
-      this.availableFields = fields;
-    });
-
-    console.log('hide Tables selected:', selectedTables);
-    //this.getColumns(selectedTables);
-
-    // this.availableFields = this.metadataService.getAvailableFieldsForTables(selectedTables)
-    // this.http.post('http://localhost:3000/api/check-table-relations', { selectedTables }).subscribe((result: any) => {
-    //   const relatedTables = result.relatedTables || [];
-    //   const columnsByTable = result.columnsByTable || {};
-
-    //   const updatedTables = Array.from(new Set([...selectedTables, ...relatedTables]));
-
-    //   this.tablesAndViews = updatedTables.map(name => ({
-    //     name,
-    //     label: this.capitalize(name),
-    //   }));
-
-    //   this.availableFields = [];
-    //   for (const tableName of selectedTables) {
-    //     const columns = columnsByTable[tableName];
-    //     if (!columns) continue;
-
-    //     for (const column of columns) {
-    //       this.availableFields.push({
-    //         column_name: `${tableName}.${column.column_name}`, // used for binding
-    //         label: `${tableName} - ${column.column_name}`,     // shown in dropdown
-    //         data_type: column.data_type,                        // store data type
-    //         raw: `${tableName}.column.${column.column_name}`   // optional: full path string
-    //       });
-    //     }
-    //   }
-
-    //   console.log(this.availableFields);
-    // });
-  }
-
-
+//#region Table change
   onTableSelect(selectedItem: any) {
-
-    console.log(selectedItem);
+    //console.log(selectedItem);
     const selectedTables = this.reportForm.get('tableandview')?.value || [];
 
     if (selectedTables.length === 0) {
@@ -308,47 +188,27 @@ export class ReportConfigComponent implements OnInit {
         const columnsByTable = result.columnsByTable;
 
         if (relatedTables && relatedTables.length >= 1) {
-          const updatedTables = Array.from(new Set([...selectedTables, ...relatedTables]));
-
+          const updatedTables = Array.from(new Set([...selectedTables, ...relatedTables])); 
           this.tablesAndViews = updatedTables.map(name => ({
             name,
-            label: name
+            label: `${this.capitalize(name)} `
           }));
 
-          console.log("Linked tables found:", relatedTables);
-          console.log("Columns:", columnsByTable);
+          //console.log("Linked tables found:", relatedTables);
+          //console.log("Columns:", columnsByTable);
         } else {
-          console.log("Selected tables are not related");
+          //console.log("Selected tables are not related");
         }
       });
 
       this.metadataService.getAvailableFieldsForTables(selectedTables).subscribe((fields: any[]) => {
         this.availableFields = fields;
+
+        if (this.reportForm.get("fieldtype")?.value == 'count') {
+          this.selectedcolumns = this.availableFields;
+        }
+
       });
-      // this.http.post('http://localhost:3000/api/metadata/check-table-relations', { selectedTables })
-      //   .subscribe((result: any) => {
-      //     const relatedTables = result.relatedTables;
-      //     const columnsByTable = result.columnsByTable;
-
-      //     if (relatedTables.length > 1) {
-
-      //       const newRelatedTables = result.relatedTables || [];
-
-      //       // Combine selected + API response
-      //       const updatedTables = Array.from(new Set([...selectedTables, ...newRelatedTables]));
-
-      //       // Rebuild tablesAndViews with only the relevant items
-      //       this.tablesAndViews = updatedTables.map(name => {
-      //         return { name, label: name };
-      //       });
-
-      //       console.log("Linked tables found:", relatedTables);
-      //       console.log("Columns:", columnsByTable);
-      //       // You can now show this in your UI
-      //     } else {
-      //       console.log("Selected tables are not related");
-      //     }
-      //   });
     }
 
     this.reportForm.get('selectedcolumns')?.setValue([]);
@@ -358,18 +218,11 @@ export class ReportConfigComponent implements OnInit {
 
   }
 
-  get isColumnSelected(): boolean {
-    const selectedColumns = this.reportForm.get('selectedcolumns')?.value;
-    return Array.isArray(selectedColumns) && selectedColumns.length > 0;
+  dropdownCloseFunction() {
+    console.log('Dropdown closed!');
   }
 
-  getColumns(table: any) {
-    this.metadataService.getAvailableFieldsForTables(table).subscribe((fields: any[]) => {
-      this.availableFields = fields;
-    });
-  }
-
-
+  // col change
   onColumnSelect(event: any) {
     //this.selectedcolumns = [...event]
     if (this.reportForm.get("fieldtype")?.value !== 'count') {
@@ -382,153 +235,11 @@ export class ReportConfigComponent implements OnInit {
     }
   }
 
+  //#endregion
 
 
 
-  onFieldChange(field: any, index: number): void {
-
-    console.log(field.data_type);
-    const filterGroup = this.filters.at(index) as FormGroup;
-
-    // const stringTypes = ['varchar', 'character varying', 'character', 'char', 'text', 'citext'];
-    // const numericTypes = ['integer', 'smallint', 'bigint', 'decimal', 'numeric', 'real', 'double precision', 'serial', 'bigserial'];
-    // const dateTypes = ['date', 'timestamp', 'timestamp without time zone', 'timestamp with time zone', 'time', 'time without time zone', 'time with time zone'];
-    // const booleanTypes = ['boolean'];
-
-    let newOperators: string[] = [];
-
-    if (this.numberTypes.includes(field.data_type)) {
-      newOperators = ['between', 'equals', 'not equals', 'greater than', 'less than'];
-    } else if (this.stringTypes.includes(field.data_type)) {
-      newOperators = ['equals', 'not equals', 'contains'];
-    } else if (this.dateTypes.includes(field.data_type)) {
-      newOperators = ['between', 'equals', 'not equals', 'greater than', 'less than'];
-    } else if (this.booleanTypes.includes(field.data_type)) {
-      newOperators = ['equals', 'not equals'];
-    } else {
-      newOperators = []; // default: unsupported type
-    }
-
-    // this.operators = newOperators.map(op => ({
-    //     label: op,
-    //     symbol: operatorMap[op] || op
-    //   }));
-    this.operators = newOperators;
-    filterGroup.patchValue({
-      operator: '',
-      value: '',
-      valueFrom: '',
-      valueTo: '',
-      selectedField: field
-    });
-  }
-
-
-  onOperatorChange(index: number): void {
-    const filterGroup = this.filters.at(index) as FormGroup;
-    const operator = filterGroup.get('operator')?.value;
-
-    if (operator === 'between') {
-      filterGroup.get('value')?.clearValidators();
-      filterGroup.get('valueFrom')?.setValidators([Validators.required]);
-      filterGroup.get('valueTo')?.setValidators([Validators.required]);
-    } else {
-      filterGroup.get('value')?.setValidators([Validators.required]);
-      filterGroup.get('valueFrom')?.clearValidators();
-      filterGroup.get('valueTo')?.clearValidators();
-    }
-
-    filterGroup.get('value')?.updateValueAndValidity();
-    filterGroup.get('valueFrom')?.updateValueAndValidity();
-    filterGroup.get('valueTo')?.updateValueAndValidity();
-  }
-
-
-
-  getInputType(dataType: string): string {
-
-    const numberTypes = ['integer', 'smallint', 'bigint', 'decimal', 'numeric', 'real', 'double precision', 'serial', 'bigserial'];
-    const dateTypes = ['date', 'timestamp', 'timestamp with time zone', 'timestamp without time zone'];
-    const booleanTypes = ['boolean'];
-
-    if (numberTypes.includes(dataType)) return 'number';
-    if (dateTypes.includes(dataType)) return 'date';
-    if (booleanTypes.includes(dataType)) return 'checkbox';
-
-    return 'text'; // fallback
-  }
-
-
-
-  capitalize(str: string): string {
-    if (!str) return '';
-    const cleanStr = str.replace(/_/g, ' '); // Replace underscores with spaces
-    return cleanStr
-      .toLowerCase()
-      .split(' ')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
-  }
-
-  get selectedColumnsControl(): FormControl {
-    return this.reportForm.get('selectedcolumns') as FormControl;
-  }
-
-
-  get filters() {
-    return this.reportForm.get('filters') as FormArray;
-  }
-
-
-  get groupby() {
-    return this.reportForm.get('groupby') as FormArray;
-  }
-
-  get groupByFields(): string[] {
-    return this.reportForm.get('groupby')?.value.map((g: any) => g.field) || [];
-  }
-
-  get sortby() {
-    return this.reportForm.get('sortby') as FormArray;
-  }
-
-  get xyaxis() {
-    return this.reportForm.get('xyaxis') as FormArray;
-  }
-
-  addFilter() {
-    this.filters.push(this.createFilter());
-  }
-
-  removeFilter(index: number) {
-    this.filters.removeAt(index);
-  }
-
-  addGrouping() {
-    this.groupby.push(
-      new FormGroup({
-        field: new FormControl('', Validators.required),
-      })
-    );
-  }
-
-  removeGrouping(index: number) {
-    this.groupby.removeAt(index);
-  }
-
-  addSorting() {
-    this.sortby.push(
-      new FormGroup({
-        field: new FormControl('', Validators.required),
-        direction: new FormControl('asc'),
-      })
-    );
-  }
-
-  removeSorting(index: number) {
-    this.sortby.removeAt(index);
-  }
-
+  //#region XY AXIS CODE
   addXYAxis() {
     const xyAxisGroup = this.fb.group({
       xAxisField: [null, Validators.required],
@@ -565,16 +276,15 @@ export class ReportConfigComponent implements OnInit {
 
 
   //// Add this method to your component
-  getYaxisAggregationOptions(index: number): string[] {
+  getYaxisAggregationOptions(index: number): { label: string, value: string }[] {
     const yAxisField = this.xyaxis.at(index).get('yAxisField')?.value;
     const field = this.availableFields.find(f => f.column_name === yAxisField);
 
-    // Check if the field is numeric
-    if (field && this.numberTypes.includes(field.data_type)) {
-      return ['sum', 'count', 'average', 'max', 'min']; // Full list for numeric fields
-    } else {
-      return ['count', 'max', 'min']; // Limited list for non-numeric fields
-    }
+    const options = field && this.numberTypes.includes(field.data_type)
+      ? ['sum', 'count', 'average', 'max', 'min']
+      : ['count', 'max', 'min'];
+
+    return options.map(opt => ({ label: opt, value: opt }));
   }
 
 
@@ -594,6 +304,160 @@ export class ReportConfigComponent implements OnInit {
   showYAxisAggregationOptions(index: number): boolean {
     const yAxisField = this.xyaxis.at(index).get('yAxisField')?.value;
     return yAxisField !== '';
+  }
+
+  //#endregion
+
+  //#region  Filter CODE
+
+  createFilter(): FormGroup {
+    return this.fb.group({
+      field: [null, Validators.required],
+      operator: ['', Validators.required],
+      value: [''],
+      valueFrom: [''],
+      valueTo: [''],
+      selectedField: null
+    });
+  }
+
+
+  onFilterFieldChange(field: any, index: number): void {
+    const fielddatatype = field.value.data_type;
+    const filterGroup = this.filters.at(index) as FormGroup;
+
+    let newOperators: string[] = [];
+
+    if (this.numberTypes.includes(fielddatatype)) {
+      newOperators = ['between', 'equals', 'not equals', 'greater than', 'less than'];
+    } else if (this.stringTypes.includes(fielddatatype)) {
+      newOperators = ['equals', 'not equals', 'contains'];
+    } else if (this.dateTypes.includes(fielddatatype)) {
+      newOperators = ['between', 'equals', 'not equals', 'greater than', 'less than'];
+    } else if (this.booleanTypes.includes(fielddatatype)) {
+      newOperators = ['equals', 'not equals'];
+    } else {
+      newOperators = [];
+    }
+
+    // 🔑 Store operator list for this row only
+    this.operatorsByRow[index] = newOperators;
+
+    filterGroup.patchValue({
+      operator: '',
+      value: '',
+      valueFrom: '',
+      valueTo: '',
+      selectedField: field
+    });
+  }
+
+
+
+  onOperatorChange(index: number): void {
+    const filterGroup = this.filters.at(index) as FormGroup;
+    const operator = filterGroup.get('operator')?.value;
+
+    console.log(operator);
+    if (operator === 'between') {
+      filterGroup.get('value')?.clearValidators();
+      filterGroup.get('valueFrom')?.setValidators([Validators.required]);
+      filterGroup.get('valueTo')?.setValidators([Validators.required]);
+    } else {
+      filterGroup.get('value')?.setValidators([Validators.required]);
+      filterGroup.get('valueFrom')?.clearValidators();
+      filterGroup.get('valueTo')?.clearValidators();
+    }
+
+    filterGroup.get('value')?.updateValueAndValidity();
+    filterGroup.get('valueFrom')?.updateValueAndValidity();
+    filterGroup.get('valueTo')?.updateValueAndValidity();
+  }
+
+
+
+  getInputType(dataType: string): string {
+    if (this.numberTypes.includes(dataType)) return 'number';
+    if (this.dateTypes.includes(dataType)) return 'date';
+    if (this.booleanTypes.includes(dataType)) return 'checkbox';
+
+    return 'text'; // fallback
+  }
+
+  addFilter() {
+    this.filters.push(this.createFilter());
+  }
+
+  removeFilter(index: number) {
+    this.filters.removeAt(index);
+  }
+
+  //#endregion
+
+
+  //#region  GROUP BY
+  addGrouping() {
+    this.groupby.push(
+      new FormGroup({
+        field: new FormControl('', Validators.required),
+      })
+    );
+  }
+
+  removeGrouping(index: number) {
+    this.groupby.removeAt(index);
+  }
+  //#endregion
+
+  //#region  sort by
+  addSorting() {
+    this.sortby.push(
+      new FormGroup({
+        field: new FormControl('', Validators.required),
+        direction: new FormControl('asc'),
+      })
+    );
+  }
+
+  removeSorting(index: number) {
+    this.sortby.removeAt(index);
+  }
+  //#endregion
+ 
+  get isColumnSelected(): boolean {
+    const selectedColumns = this.reportForm.get('selectedcolumns')?.value;
+    return Array.isArray(selectedColumns) && selectedColumns.length > 0;
+  }
+ 
+  get filters() {
+    return this.reportForm.get('filters') as FormArray;
+  }
+
+
+  get groupby() {
+    return this.reportForm.get('groupby') as FormArray;
+  }
+ 
+  get sortby() {
+    return this.reportForm.get('sortby') as FormArray;
+  }
+
+  get xyaxis() {
+    return this.reportForm.get('xyaxis') as FormArray;
+  }
+
+
+   onConfirmSave() {
+    if (this.reportForm.invalid) {
+      this.reportForm.markAllAsTouched();
+      return;
+    }
+    this.saveConfiguration();
+    // const reportname = this.reportForm.value.reportname;
+    // const reportData = this.reportForm.value; 
+    ///console.log('Saving report:', reportname, reportData);
+    this.showSaveModal = false;
+ 
   }
 
   saveConfiguration(): void {
@@ -620,7 +484,7 @@ export class ReportConfigComponent implements OnInit {
         next: (response: any) => {
           //this.notificationService.showNotification(response.message, 'success');
           //this.addNewReport();
-          this.router.navigateByUrl('List-Report');
+          this.router.navigateByUrl('list-report');
         },
         error: (err) => {
           console.error('Error While Updating:', err.error);
@@ -633,7 +497,7 @@ export class ReportConfigComponent implements OnInit {
         next: (response: any) => {
           //this.notificationService.showNotification(response.message, 'success');
           //this.addNewReport();
-          this.router.navigateByUrl('List-Report');
+          this.router.navigateByUrl('list-report');
         },
         error: (err) => {
           console.error('Error While Saving: ', err.error);
@@ -654,26 +518,27 @@ export class ReportConfigComponent implements OnInit {
       return;
     }
 
-    const config = { ...this.reportForm.value };
+    const config = this.reportForm.value;
 
     this.metadataService.getDataforPreview(config).subscribe({
       next: (response: any) => {
         const responseData = response?.data;
 
 
-        const { data, groupBy, chartData, displayedColumns, showPreview, ischart } = this.metadataService.processPreviewData(responseData);
+        const { data, groupBy, chartData, displayedColumns, showPreview, ischart, isRaw, isGroup } = this.metadataService.processPreviewData(responseData);
 
-        this.previewData = { groupBy, data, chartData, ischart };
+        this.previewData = { data, groupBy, chartData, displayedColumns, showPreview, ischart, isRaw, isGroup };
         this.displayedColumns = displayedColumns;
         this.showPreview = showPreview;
 
         console.log('API Response:', responseData);
+        console.log('Preview data:', this.previewData);
 
         if (this.previewData.data.length > 0) {
-          console.log(this.previewData);
+          //console.log(this.previewData);
           //this.notificationService.showNotification("Fetch Data Successfully.", 'success');
         } else {
-          console.log(this.previewData);
+          //console.log(this.previewData);
           //this.notificationService.showNotification("No Data Found.", 'warning');
         }
 
@@ -699,23 +564,7 @@ export class ReportConfigComponent implements OnInit {
     });
 
   }
-
-  closeModal() {
-    this.showPreview = false;
-    this.previewMode = null;
-
-  }
-
-  showReportView() {
-    this.showPreview = true;
-    this.previewMode = 'report';
-  }
-
-  showChartView() {
-    this.showPreview = true;
-    this.previewMode = 'chart';
-  }
-
+  
   addNewReport(): void {
     this.reportForm.reset();
     (this.reportForm.get('filters') as FormArray).clear();
@@ -725,102 +574,66 @@ export class ReportConfigComponent implements OnInit {
     this.reprotconfig.clearConfiguration();
     console.log('New report initiated');
     this.ngOnInit();
-    this.router.navigate(['Create-Custom-Report']);
+    this.router.navigate(['dynamic-report']);
   }
 
 
+  onBack() {
+    this.router.navigate(['list-report']);
+  }
+
+
+   setFormArray(key: string, values: any[]): void {
+    const formArray = this.reportForm.get(key) as FormArray;
+    formArray.clear();
+
+    if (values && values.length > 0) {
+      values.forEach(val => {
+
+        if (typeof val === 'string') {
+          try {
+            val = JSON.parse(val);
+          } catch (e) {
+            console.error('Error parsing JSON:', val);
+            return;
+          }
+        }
+
+
+        if (typeof val === 'object' && !Array.isArray(val)) {
+          const group = new FormGroup({});
+          for (const key in val) {
+            if (val.hasOwnProperty(key)) {
+              group.addControl(key, new FormControl(val[key]));
+            }
+          }
+          formArray.push(group);
+        } else {
+          formArray.push(new FormControl(val));
+        }
+      });
+    }
+
+    // console.log(formArray); // For debugging: check the form array structure
+  }
+  
+  getColumns(table: any) {
+    this.metadataService.getAvailableFieldsForTables(table).subscribe((fields: any[]) => {
+      this.availableFields = fields;
+    });
+  }
+
+  capitalize(str: string): string {
+    if (!str) return '';
+    const cleanStr = str.replace(/_/g, ' '); // Replace underscores with spaces
+    return cleanStr
+      .toLowerCase()
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  }
+
 }
-// export class ReportConfigComponent {
-// activeTab: any;
-// onSubmit() {
-// throw new Error('Method not implemented.');
-// }
-
-//    originalTablesAndViews: any[] = [];
-//   previewMode: 'report' | 'chart' | null = null;
-//   showPreviewButtons: boolean = false;
-//   previewData: any;
-//   ChartData: any[] = [];
-//   displayedColumns: string[] = [];
-//   showPreview = false;
-//   operators: string[] = ['between', 'equals', 'not equals', 'greater than', 'less than', 'contains'];
-//   operators2 = [
-//     { label: 'between', symbol: 'between' },
-//     { label: 'equals', symbol: '=' },
-//     { label: 'not equals', symbol: '≠' },
-//     { label: 'greater than', symbol: '>' },
-//     { label: 'less than', symbol: '<' },
-//     { label: 'greater than equal to', symbol: '>=' },
-//     { label: 'less than equal to', symbol: '<=' },
-//     { label: 'contains', symbol: 'like' }, // or use 'includes' icon like '∈'
-//   ];
-
-//    stringTypes: string[] = ['varchar', 'character varying', 'character', 'char', 'text', 'citext'];
-//   Countoperators: string[] = ['sum', 'count', 'average', 'max', 'min'];
-//   numberTypes: string[] = ['integer', 'smallint', 'bigint', 'decimal', 'numeric', 'real', 'double precision', 'serial', 'bigserial'];
-//   dateTypes: string[] = ['date', 'timestamp', 'timestamp with time zone', 'timestamp without time zone'];
-//   booleanTypes: string[] = ['boolean'];
-//   tablesAndViews: any[] = [];
-//   availableFields: any[] = [];
-//   selectedcolumns: any[] = [];
-//   showColumnsAndGroupBy: boolean = true;
-//   showXYConfig: boolean = true;
-//   reportId: string | null = null;
-//   mode: string | null = null;
-
-//   reportForm = new FormGroup({
-//     fieldtype: new FormControl('summary', Validators.required),
-//     tableandview: new FormControl([], [Validators.required, minSelectedCheckboxes(1)]),
-//     reportname: new FormControl(),
-//     selectedcolumns: new FormControl([]),//.minSelectedCheckboxes(1)
-//     filters: new FormArray([]),
-//     groupby: new FormArray([]),
-//     sortby: new FormArray([]),
-//     xyaxis: new FormArray([])
-//   });
-
-
-
-//   constructor(private http: HttpClient, private router: Router, private route: ActivatedRoute,  
-//     private fb: FormBuilder, private metadataService: MetadataService) { }
-
-//   // Radio button logic
-//     onFieldTypeChange() {
-//     const fieldType = this.reportForm.get('fieldtype')?.value;
-
-//     // Show/Hide sections based on selection
-//     if (fieldType === 'count') {
-//       this.showColumnsAndGroupBy = false;
-//       this.showXYConfig = true;
-//       console.log(this.availableFields);
-//       this.selectedcolumns = [...this.availableFields];
-//       this.reportForm.get('selectedcolumns')?.clearValidators();
-//       this.reportForm.get('selectedcolumns')?.updateValueAndValidity();
-//     } else if (fieldType === 'summary') {
-//       this.showColumnsAndGroupBy = true;
-//       this.showXYConfig = false;
-//       this.reportForm.get('selectedcolumns')?.setValidators([Validators.required]);
-//       this.reportForm.get('selectedcolumns')?.updateValueAndValidity();
-//     }
-//   }
-
-
-//   //table selection logic
-//   onTableChange(event: any) {
-//   console.log('Tables selected:', event.value);
-//   // Call your logic to fetch columns or update state
-// }
-
-// onTableClear() {
-//   console.log('Table selection cleared');
-// }
-
-// onTableClose() {
-//   console.log('Table dropdown closed');
-// }
-
-// }
-
 
 function minSelectedCheckboxes(min: number = 1) {
   return function (control: AbstractControl): ValidationErrors | null {

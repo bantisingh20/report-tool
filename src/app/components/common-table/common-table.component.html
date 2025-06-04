@@ -1,114 +1,30 @@
- 
-<!--  
-<p-table
-  [value]="data"
-  [columns]="columns"
-  [paginator]="true"
-  [rows]="10"
-  [rowsPerPageOptions]="[5, 10, 20]"
-  [resizableColumns]="true"
-  [scrollable]="true"
-  scrollHeight="400px"
-  sortMode="multiple"
-  class="p-datatable-sm p-datatable-striped p-datatable-gridlines p-datatable-hoverable-rows"
->
-   
-  <ng-template pTemplate="header" let-columns>
-    <tr>
-      <th *ngFor="let col of columns" [pSortableColumn]="col.field">
-        {{ col.header }}
-        <p-sortIcon [field]="col.field"></p-sortIcon>
-      </th>
-    </tr>
-  </ng-template>
- 
-  <ng-template pTemplate="body" let-rowData let-columns="columns">
-    <tr>
-      <td *ngFor="let col of columns">
-        {{ rowData[col.field] }}
-      </td>
-    </tr>
-  </ng-template>
- 
-  <ng-template pTemplate="emptymessage">
-    <tr>
-      <td [attr.colspan]="columns.length" class="text-center">No data available.</td>
-    </tr>
-  </ng-template>
-</p-table> -->
-
-<p-table [value]="groupedData" [paginator]="true" [rows]="rows" [first]="first" (onPage)="onPageChange($event)" [sortMode]="'multiple'">
+<p-table [value]="group ? groupedData : InputData" [paginator]="false" [rows]="rows" [first]="first"
+  (onPage)="onPageChange($event)" [sortMode]="'multiple'" [scrollable]="true" [scrollHeight]="'calc(100vh - 200px)'"
+  class="table-auto overflow-x-auto overflow-y-auto w-full max-w-full">
   <ng-template pTemplate="header">
     <tr>
-      <th *ngFor="let col of columns" pSortableColumn="{{col.field}}">
+      <th *ngFor="let col of columns" pSortableColumn="{{ col.field }}">
         {{ col.header }}
         <p-sortIcon [field]="col.field"></p-sortIcon>
       </th>
     </tr>
   </ng-template>
 
-  <ng-template pTemplate="body" let-row let-rowIndex="rowIndex">
-    <tr [ngClass]="{'grouped-row': row.__rowspan && row.__rowspan > 1}">
-      <td *ngFor="let col of columns; let i = index">
-        <!-- For groupBy column, only show if rowspan > 0, otherwise skip cell -->
-        <ng-container *ngIf="col.field === groupBy">
-          <span *ngIf="row.__rowspan && row.__rowspan > 0" [attr.rowspan]="row.__rowspan" class="group-cell">
-            {{ row[col.field] }}
-          </span>
-        </ng-container>
-
-        <!-- For other columns, show normally -->
-        <ng-container *ngIf="col.field !== groupBy">
-          {{ row[col.field] }}
-        </ng-container>
-      </td>
-    </tr>
-  </ng-template>
-</p-table>
-
-
-
-<p-table
-  [value]="getGroupedData()"
-  [paginator]="true"
-  [rows]="10"
-  [resizableColumns]="true"
-  [scrollable]="true"
-  scrollHeight="400px"
-   [sortMode]="'multiple'"
-  [rowsPerPageOptions]="[5, 10, 20]"
-  class="p-datatable-sm p-datatable-striped p-datatable-gridlines p-datatable-hoverable-rows"
->
-  <ng-template pTemplate="header">
-    <tr>
-      <th *ngFor="let col of columns">{{ col.header }}
-        <p-sortIcon [field]="col.field"></p-sortIcon>
-      </th>
-    </tr>
-  </ng-template>
-
-  <ng-template pTemplate="body" let-rowData let-rowIndex="rowIndex">
+  <ng-template pTemplate="body" let-row>
     <tr>
       <ng-container *ngFor="let col of columns">
-        <!-- Grouped column with rowSpan -->
-        <td *ngIf="groupBy === col.field && rowData.__rowspan > 0" [rowSpan]="rowData.__rowspan">
-          {{ rowData[col.field] }}
+        <td *ngIf="group && Inputgroupby.includes(col.field)">
+          <ng-container *ngIf="row.__rowspan[col.field] > 0">
+            <span [attr.rowspan]="row.__rowspan[col.field]" class="group-cell">
+              {{ row[col.field] }}
+            </span>
+          </ng-container>
         </td>
-
-        <!-- Hidden cell for grouped column with rowspan = 0 -->
-        <td *ngIf="groupBy === col.field && rowData.__rowspan === 0" style="display: none;"></td>
-
-        <!-- Normal cell -->
-        <td *ngIf="groupBy !== col.field">
-          {{ rowData[col.field] }}
+        <td *ngIf="!group || !Inputgroupby.includes(col.field)">
+          {{ row[col.field] }}
         </td>
       </ng-container>
     </tr>
   </ng-template>
-
-  <ng-template pTemplate="emptymessage">
-    <tr>
-      <td [attr.colspan]="columns.length" class="text-center">No data available.</td>
-    </tr>
-  </ng-template>
 </p-table>
+ 

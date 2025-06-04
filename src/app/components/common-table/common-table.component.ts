@@ -7,105 +7,73 @@ import { SharedModule } from '../../shared/shared.module';
   templateUrl: './common-table.component.html',
   styleUrl: './common-table.component.css'
 })
+ export class CommonTableComponent implements OnInit {
 
-export class CommonTableComponent implements OnInit {
- // @Input() data: any[] = [];
+  @Input() israw: boolean = true;
+  @Input() group: boolean = false;
+  @Input() Inputgroupby: string[] = [];
+  @Input() InputData: any[] = [];
 
-    data = [
-    { 'products - product_id': 1, 'products - price': '241.35', 'categories - name': 'Electronics' },
-    { 'products - product_id': 2, 'products - price': '222.74', 'categories - name': 'Clothing' },
-        { 'products - product_id': 1, 'products - price': '241.35', 'categories - name': 'Electronics' },
-    { 'products - product_id': 2, 'products - price': '222.74', 'categories - name': 'Clothing' },
-        { 'products - product_id': 1, 'products - price': '241.35', 'categories - name': 'Electronics' },
-    { 'products - product_id': 2, 'products - price': '222.74', 'categories - name': 'Clothing' },
-        { 'products - product_id': 1, 'products - price': '241.35', 'categories - name': 'Electronics' },
-    { 'products - product_id': 2, 'products - price': '222.74', 'categories - name': 'Clothing' },
-        { 'products - product_id': 1, 'products - price': '241.35', 'categories - name': 'Electronics' },
-    { 'products - product_id': 2, 'products - price': '222.74', 'categories - name': 'Clothing' },
-        { 'products - product_id': 1, 'products - price': '241.35', 'categories - name': 'Electronics' },
-            { 'products - product_id': 1, 'products - price': '241.35', 'categories - name': 'Electronics' },
-    { 'products - product_id': 2, 'products - price': '222.74', 'categories - name': 'Clothing' },
-        { 'products - product_id': 1, 'products - price': '241.35', 'categories - name': 'Electronics' },
-    { 'products - product_id': 2, 'products - price': '222.74', 'categories - name': 'Clothing' },
-        { 'products - product_id': 1, 'products - price': '241.35', 'categories - name': 'Electronics' },
-    { 'products - product_id': 2, 'products - price': '222.74', 'categories - name': 'Clothing' },
-        { 'products - product_id': 1, 'products - price': '241.35', 'categories - name': 'Electronics' },
-    { 'products - product_id': 2, 'products - price': '222.74', 'categories - name': 'Clothing' },
-        { 'products - product_id': 1, 'products - price': '241.35', 'categories - name': 'Electronics' },
-    { 'products - product_id': 2, 'products - price': '222.74', 'categories - name': 'Clothing' },
-        { 'products - product_id': 1, 'products - price': '241.35', 'categories - name': 'Electronics' },
-            { 'products - product_id': 1, 'products - price': '241.35', 'categories - name': 'Electronics' },
-    { 'products - product_id': 2, 'products - price': '222.74', 'categories - name': 'Clothing' },
-        { 'products - product_id': 1, 'products - price': '241.35', 'categories - name': 'Electronics' },
-    { 'products - product_id': 2, 'products - price': '222.74', 'categories - name': 'Clothing' },
-        { 'products - product_id': 1, 'products - price': '241.35', 'categories - name': 'Electronics' },
-    { 'products - product_id': 2, 'products - price': '222.74', 'categories - name': 'Clothing' },
-        { 'products - product_id': 1, 'products - price': '241.35', 'categories - name': 'Electronics' },
-    { 'products - product_id': 2, 'products - price': '222.74', 'categories - name': 'Clothing' },
-        { 'products - product_id': 1, 'products - price': '241.35', 'categories - name': 'Electronics' },
-    { 'products - product_id': 2, 'products - price': '222.74', 'categories - name': 'Clothing' },
-        { 'products - product_id': 1, 'products - price': '241.35', 'categories - name': 'Electronics' },
-    { 'products - product_id': 2, 'products - price': '222.74', 'categories - name': 'Clothing' }
-  ];
-  //@Input() groupBy?: string;
-   groupBy: string = 'categories - name';
   columns: { field: string; header: string }[] = [];
- // Pagination config
+  groupedData: any[] = [];
+
   rows = 5;
   first = 0;
 
-    // Data after rowspan calculation for grouping
-  groupedData: any[] = [];
-  // ngOnInit() {
-  //   if (this.data && this.data.length > 0) {
-  //     const firstRow = this.data[0];
-  //     this.columns = Object.keys(firstRow).map(key => ({
-  //       field: key,
-  //       header: this.formatHeader(key)
-  //     }));
-  //   }
-  // }
-
   ngOnInit() {
-    if (this.data.length === 0) return;
+    if (this.InputData.length === 0) return;
 
-    // Dynamically get keys from first object
-    const keys = Object.keys(this.data[0]);
+    const keys = Object.keys(this.InputData[0]);
 
-    // Reorder so groupBy is first column
+    // Build column list with group-by fields first
     this.columns = [
-      { field: this.groupBy, header: this.formatHeader(this.groupBy) },
-      ...keys.filter(k => k !== this.groupBy).map(k => ({ field: k, header: this.formatHeader(k) }))
+      ...this.Inputgroupby.map(field => ({
+        field,
+        header: this.formatHeader(field)
+      })),
+      ...keys
+        .filter(k => !this.Inputgroupby.includes(k))
+        .map(k => ({
+          field: k,
+          header: this.formatHeader(k)
+        }))
     ];
 
-    this.calculateRowspan();
+    if (this.group && this.Inputgroupby.length > 0) {
+      this.calculateRowspan();
+    }
   }
 
-   calculateRowspan() {
-    const groupKey = this.groupBy;
-    const seen = new Map<string, number>();
+  calculateRowspan() {
     this.groupedData = [];
+    const rowspans = new Map<string, number>();
+    const seen = new Map<string, number>();
 
-    // Count how many rows per groupKey value
-    this.data.forEach(row => {
-       const key = (row as any)[this.groupBy];
-    //  const key = row[groupKey];
+    // Generate unique key by concatenating group-by field values
+    const getGroupKey = (row: any) =>
+      this.Inputgroupby.map(f => row[f]).join('|');
+
+    // Count occurrences
+    for (const row of this.InputData) {
+      const key = getGroupKey(row);
       seen.set(key, (seen.get(key) || 0) + 1);
-    });
+    }
 
-    // Track groups already added for rowspan
-    const processed = new Set<string>();
+    const processed = new Map<string, number>();
 
-    this.data.forEach(row => {
-       const key = (row as any)[this.groupBy];
-      //const key = row[groupKey];
-      if (!processed.has(key)) {
-        this.groupedData.push({ ...row, __rowspan: seen.get(key) });
-        processed.add(key);
-      } else {
-        this.groupedData.push({ ...row, __rowspan: 0 });
+    for (const row of this.InputData) {
+      const key = getGroupKey(row);
+      const count = seen.get(key) || 0;
+      const already = processed.get(key) || 0;
+
+      const groupedRow = { ...row, __rowspan: {} };
+      for (const groupField of this.Inputgroupby) {
+        groupedRow.__rowspan[groupField] = already === 0 ? count : 0;
       }
-    });
+
+      this.groupedData.push(groupedRow);
+      processed.set(key, already + 1);
+    }
   }
 
   onPageChange(event: any) {
@@ -120,60 +88,6 @@ export class CommonTableComponent implements OnInit {
       .replace(/\s+/g, ' ')
       .replace(/\b\w/g, l => l.toUpperCase());
   }
-
-  // getGroupedData() {
-  //   if (!this.groupBy) return this.data;
-
-  //   const grouped: any[] = [];
-  //   const seen = new Map<string, number>();
-
-  //   for (const row of this.data) {
-  //     const key = row[this.groupBy];
-  //     if (!seen.has(key)) {
-  //       seen.set(key, 1);
-  //       grouped.push({ ...row, __rowspan: 1 });
-  //     } else {
-  //       seen.set(key, seen.get(key)! + 1);
-  //       grouped.push({ ...row, __rowspan: 0 }); // hide the repeated cell
-  //     }
-  //   }
-
-  //   // Update the first item of each group with correct rowspan
-  //   const groupedKeys = Array.from(seen.entries());
-  //   for (const [key, span] of groupedKeys) {
-  //     const row = grouped.find(r => r[this.groupBy] === key && r.__rowspan === 1);
-  //     if (row) row.__rowspan = span;
-  //   }
-
-  //   return grouped;
-  // }
-
-  getGroupedData() {
-  if (!this.groupBy) return this.data;
-
-  const grouped: any[] = [];
-  const seen = new Map<string, number>();
-
-  for (const row of this.data) {
-    const groupKey = (row as any)[this.groupBy];
-// groupBy is guaranteed to be a string now
-    if (!seen.has(groupKey)) {
-      seen.set(groupKey, 1);
-      grouped.push({ ...row, __rowspan: 1 });
-    } else {
-      seen.set(groupKey, seen.get(groupKey)! + 1);
-      grouped.push({ ...row, __rowspan: 0 });
-    }
-  }
-
-  for (const [key, span] of seen.entries()) {
-    const row = grouped.find(r => r[this.groupBy] === key && r.__rowspan === 1);
-    if (row) row.__rowspan = span;
-  }
-
-  return grouped;
-}
-
 }
 
 

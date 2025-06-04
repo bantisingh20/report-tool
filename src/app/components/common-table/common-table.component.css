@@ -8,3 +8,8 @@
   font-weight: 700;
   vertical-align: middle;
 }
+ 
+::ng-deep .group-cell {
+  vertical-align: middle !important;
+  text-align: center;
+}

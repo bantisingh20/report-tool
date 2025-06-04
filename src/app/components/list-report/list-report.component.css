@@ -1,0 +1,15 @@
+::ng-deep .green-theme .p-datatable-thead > tr > th {
+  background-color: #d1fae5;  
+  color: #065f46;  
+  font-weight: 600;
+}
+
+::ng-deep .green-theme .p-datatable-tbody > tr:nth-child(even) {
+  background-color: #f0fdf4;  
+}
+
+::ng-deep .green-theme .p-paginator .p-paginator-pages .p-paginator-page.p-highlight {
+  background: #22c55e;
+  color: white;
+  border: none;
+}
