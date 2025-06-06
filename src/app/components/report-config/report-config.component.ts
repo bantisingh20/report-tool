@@ -7,6 +7,7 @@ import { MetadataService } from '../../service/metadata.service';
 import { ReportConfigService } from '../../service/report-config.service';
 import { CommonTableComponent } from "../common-table/common-table.component";
 import { ChartComponentComponent } from '../chart-component/chart-component.component';
+import { NotificationService } from '../../service/NotificationService.service';
 
 
 declare var bootstrap: any;
@@ -82,7 +83,7 @@ export class ReportConfigComponent implements OnInit {
 
 
   constructor(private http: HttpClient, private router: Router, private fb: FormBuilder,
-    private route: ActivatedRoute, private metadataService: MetadataService,
+    private route: ActivatedRoute, private metadataService: MetadataService,private notificationService :NotificationService,
     private reprotconfig: ReportConfigService) { }
 
 
@@ -450,6 +451,7 @@ export class ReportConfigComponent implements OnInit {
    onConfirmSave() {
     if (this.reportForm.invalid) {
       this.reportForm.markAllAsTouched();
+      this.notificationService.warn('warn', 'Fill All Data , something is missing');
       return;
     }
     this.saveConfiguration();
@@ -464,14 +466,14 @@ export class ReportConfigComponent implements OnInit {
 
     if (this.reportForm.invalid) {
       this.reportForm.markAllAsTouched();
-      console.log('error')
+      this.notificationService.warn('warn', 'Fill All Data , something is missing');
       return;
     }
 
     const reportname = this.reportForm.get('reportname')?.value;
 
     if (!reportname || reportname.trim() === '') {
-      //this.notificationService.showNotification('Report name is required', 'error');
+       this.notificationService.warn('warn', 'Report Name is required.');
       return;
     }
 
@@ -482,26 +484,25 @@ export class ReportConfigComponent implements OnInit {
       //config.id = this.reportId;
       this.metadataService.updateReportFormat(config, this.reportId).subscribe({
         next: (response: any) => {
-          //this.notificationService.showNotification(response.message, 'success');
+          this.notificationService.success('Success', response.message);  
           //this.addNewReport();
           this.router.navigateByUrl('list-report');
         },
         error: (err) => {
           console.error('Error While Updating:', err.error);
-          //this.notificationService.showNotification(err.error.message, 'error');
+          this.notificationService.error('Error', err?.error?.message);
         }
       });
     } else {
 
       this.metadataService.SaveReportForamt(config).subscribe({
         next: (response: any) => {
-          //this.notificationService.showNotification(response.message, 'success');
-          //this.addNewReport();
+          this.notificationService.success('Success', response.message);    
           this.router.navigateByUrl('list-report');
         },
         error: (err) => {
           console.error('Error While Saving: ', err.error);
-          //this.notificationService.showNotification(err.error.message, 'error');
+          this.notificationService.error('Error', err?.error?.message);
         }
       });
     }
@@ -514,7 +515,7 @@ export class ReportConfigComponent implements OnInit {
     //console.log(this.reportForm.value);
     if (this.reportForm.invalid) {
       this.reportForm.markAllAsTouched();
-      alert('fill all');
+      this.notificationService.warn('warn', 'Fill al data , something is missing');
       return;
     }
 
@@ -536,6 +537,7 @@ export class ReportConfigComponent implements OnInit {
 
         if (this.previewData.data.length > 0) {
           //console.log(this.previewData);
+          this.notificationService.success('success', 'Fetch Data Successfully.');
           //this.notificationService.showNotification("Fetch Data Successfully.", 'success');
         } else {
           //console.log(this.previewData);

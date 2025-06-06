@@ -149,14 +149,14 @@
                     tooltipPosition="top"
                   ></button>
 
-                  <button 
+                  <!-- <button 
                     pButton 
                     icon="pi pi-trash" 
-                    class="!p-1.5 !w-8 !h-8 !text-xs border border-red-200 bg-red-50 hover:bg-red-100 text-red-700 hover:text-red-800 rounded-lg transition-all duration-200 hidden"
+                    class="!p-1.5 !w-8 !h-8 !text-xs hiddenborder border-red-200 bg-red-50 hover:bg-red-100 text-red-700 hover:text-red-800 rounded-lg transition-all duration-200 hidden"
                     (click)="deleteConfig(config)" 
                     pTooltip="Delete this report (Disabled)"
                     tooltipPosition="top"
-                  ></button>
+                  ></button> -->
                 </div>
               </td>
             </tr>
@@ -236,7 +236,7 @@
               </div>
 
               <!-- Table Section -->
-              <div *ngIf="showPreview" class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+              <div *ngIf="showPreview && !previewData.ischart" class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
                 <div class="flex items-center gap-2 px-4 sm:px-6 py-4 border-b border-slate-200">
                   <i class="pi pi-table text-teal-600"></i>
                   <h6 class="font-semibold text-slate-800">Data Table</h6>
@@ -280,11 +280,15 @@
     </div>
   </div>
 </div>
+
+
+
+
 <!-- versio 2 -->
-<div class="hidden min-h-screen bg-gradient-to-br from-surface-50 to-teal-50/30 dark:from-surface-900 dark:to-teal-900/20 p-3 sm:p-6">
+<!-- <div class="hidden min-h-screen bg-gradient-to-br from-surface-50 to-teal-50/30 dark:from-surface-900 dark:to-teal-900/20 p-3 sm:p-6">
   <div class="max-w-7xl mx-auto space-y-6">
     
-    <!-- Header Section -->
+     
     <div class="surface-card border border-surface-200 dark:border-surface-700 rounded-xl shadow-sm p-4 sm:p-6">
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div class="flex items-center gap-3">
@@ -310,7 +314,7 @@
       </div>
     </div>
 
-    <!-- Stats Cards -->
+     
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
       <div class="surface-card border border-surface-200 dark:border-surface-700 rounded-lg p-4 shadow-sm">
         <div class="flex items-center gap-3">
@@ -349,7 +353,7 @@
       </div>
     </div>
 
-    <!-- Main Table Card -->
+    
     <div class="surface-card border border-surface-200 dark:border-surface-700 rounded-xl shadow-sm overflow-hidden">
       <div class="px-4 sm:px-6 py-4 border-b border-surface-200 dark:border-surface-700">
         <div class="flex items-center justify-between">
@@ -470,7 +474,7 @@
       </div>
     </div>
 
-    <!-- Enhanced Modal (Preview) -->
+    
     <div 
       *ngIf="showPreview" 
       class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-6"
@@ -480,7 +484,7 @@
         class="surface-card w-full max-w-6xl h-full max-h-[90vh] flex flex-col rounded-xl shadow-2xl overflow-hidden transform transition-all duration-300"
         (click)="$event.stopPropagation()"
       >
-        <!-- Modal Header -->
+     
         <div class="flex justify-between items-center px-4 sm:px-6 py-4 border-b border-surface-200 dark:border-surface-700 bg-gradient-to-r from-teal-50 dark:from-teal-900/30 to-surface-50 dark:to-surface-800">
           <div class="flex items-center gap-3">
             <div class="w-8 h-8 bg-gradient-to-br from-teal-500 to-teal-600 rounded-lg flex items-center justify-center">
@@ -503,11 +507,11 @@
           </div>
         </div>
 
-        <!-- Modal Content -->
+ 
         <div class="flex-1 overflow-auto bg-gradient-to-br from-surface-50/50 dark:from-surface-900/50 to-surface-0 dark:to-surface-900">
           <div class="p-4 sm:p-6 space-y-6">
             <ng-container>
-              <!-- Chart Section -->
+     
               <div *ngIf="showPreview && previewData.ischart" class="surface-card border border-surface-200 dark:border-surface-700 rounded-xl p-4 sm:p-6 shadow-sm">
                 <div class="flex items-center gap-2 mb-4">
                   <i class="pi pi-chart-bar text-teal-600 dark:text-teal-400"></i>
@@ -516,7 +520,7 @@
                 <app-chart-component [chartDataArray]="previewData.chartData"></app-chart-component>
               </div>
 
-              <!-- Table Section -->
+        
               <div *ngIf="showPreview" class="surface-card border border-surface-200 dark:border-surface-700 rounded-xl overflow-hidden shadow-sm">
                 <div class="flex items-center gap-2 px-4 sm:px-6 py-4 border-b border-surface-200 dark:border-surface-700">
                   <i class="pi pi-table text-teal-600 dark:text-teal-400"></i>
@@ -538,7 +542,7 @@
           </div>
         </div>
 
-        <!-- Modal Footer -->
+    
         <div class="px-4 sm:px-6 py-4 border-t border-surface-200 dark:border-surface-700 bg-surface-50/50 dark:bg-surface-800/50">
           <div class="flex justify-end gap-3">
             <button 
@@ -562,255 +566,5 @@
   </div>
 </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<!-- 
-<div style="text-align: center">
-    <h2 style="color: green">GeeksforGeeks</h2>
-    <h4>Angular PrimeNG Table Row Group</h4>
-
-    <p-table
-        [value]="companyProfiles" 
-        rowGroupMode="subheader" 
-        groupRowsBy="sector" 
-        [scrollable]="true" 
-        scrollHeight="350px">
-        <ng-template pTemplate="header">
-            <tr>
-                <th style="min-width:200px">
-                      Company</th>
-                <th style="min-width:200px">
-                      This Year Sales</th>
-                <th style="min-width:200px">
-                      Last Year Sales</th>
-            </tr>
-        </ng-template>
-        <ng-template pTemplate="groupheader" let-company>
-            <tr pRowGroupHeader>
-                <td colspan="3">
-                    <span class="font-bold">
-                          {{company.sector}}</span>
-                </td>
-            </tr>
-        </ng-template>
-        <ng-template pTemplate="body" 
-            let-company>
-            <tr>
-                <td style="min-width:200px">
-                    {{company.name}}
-                </td>
-                <td style="min-width:200px">
-                    {{company.thisYearSales}}
-                </td>
-                <td style="min-width:200px">
-                    {{company.lastYearSales}}
-                </td>
-            </tr>
-        </ng-template>
-    </p-table>
-</div>
-
-
-<div style="text-align: center">
-    <h2 style="color: green">GeeksforGeeks</h2>
-    <h4>Angular PrimeNG Table Row Group</h4>
-
-    <p-table
-        [value]="companyProfiles" 
-        rowGroupMode="subheader" 
-        groupRowsBy="sector" 
-        dataKey="sector">
-        <ng-template pTemplate="header">
-            <tr>
-                <th style="min-width:200px">
-                    Company
-                </th>
-                <th style="min-width:200px">
-                    This Year Sales
-                </th>
-                <th style="min-width:200px">
-                    Last Year Sales
-                </th>
-            </tr>
-        </ng-template>
-        <ng-template 
-            pTemplate="groupheader" 
-            let-company 
-            let-isExpanded="expanded">
-            <tr>
-                <td colspan="3">
-                    <button type="button" pButton pRipple 
-                        [pRowToggler]="company"
-                        class="p-button-text 
-                        p-button-rounded p-button-plain mr-4" 
-                        [icon]="isExpanded ? 
-                        'pi pi-chevron-down' : 
-                        'pi pi-chevron-right'">
-                    </button>
-                    <span class="font-bold">
-                        {{company.sector}}
-                    </span>
-                </td>
-            </tr>
-        </ng-template>
-        <ng-template pTemplate="rowexpansion" let-company>
-            <tr>
-                <td style="min-width:200px">
-                    {{company.name}}
-                </td>
-                <td style="min-width:200px">
-                    {{company.thisYearSales}}
-                </td>
-                <td style="min-width:200px">
-                    {{company.lastYearSales}}
-                </td>
-            </tr>
-        </ng-template>
-    </p-table>
-</div>
-
-
-
-
-<div style="text-align: center">
-    <h2 style="color: green">GeeksforGeeks</h2>
-    <h4>Angular PrimeNG Table Row Group</h4>
-
-    <p-table
-        [value]="companyProfiles" 
-        rowGroupMode="rowspan" 
-        responsiveLayout="scroll"
-        groupRowsBy="sector" 
-        dataKey="sector">
-        <ng-template pTemplate="header">
-            <tr>
-                <th>Sector</th>
-                <th>Company</th>
-                <th>This Year Sales</th>
-                <th>Last Year Sales</th>
-            </tr>
-        </ng-template>
-        <ng-template 
-            pTemplate="body" 
-            let-company 
-            let-rowgroup="rowgroup" 
-            let-rowspan="rowspan">
-            <tr>
-                <td 
-                    *ngIf="rowgroup" 
-                    [attr.rowspan]="rowspan">
-                    <span class="font-bold">
-                        {{company.sector}}
-                    </span>
-                </td>
-                <td>{{company.name}}</td>
-                <td>{{company.thisYearSales}}</td>
-                <td>{{company.lastYearSales}}</td>
-            </tr>
-        </ng-template>
-    </p-table>
-</div> -->
+ -->
+  

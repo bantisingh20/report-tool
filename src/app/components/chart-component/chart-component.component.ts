@@ -32,4 +32,42 @@ export class ChartComponentComponent implements OnChanges {
       };
     }
   }
+
+
+  getResponsiveOptions(options: any): any {
+  const defaultOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      title: {
+        display: true,
+        text: options?.plugins?.title?.text || ''
+      },
+      legend: {
+        display: true,
+        position: 'top'
+      }
+    },
+    scales: {
+      x: {
+        ticks: {
+          autoSkip: false,
+          maxRotation: 45,
+          minRotation: 20
+        }
+      }
+    }
+  };
+
+  // Add horizontal scroll logic based on label count
+  const labels = options?.labels || [];
+  if (labels.length > 15) {
+    defaultOptions.scales.x.ticks.maxRotation = 60;
+    defaultOptions.scales.x.ticks.minRotation = 30;
+  }
+
+  return { ...defaultOptions, ...options };
+}
+
+
 }
