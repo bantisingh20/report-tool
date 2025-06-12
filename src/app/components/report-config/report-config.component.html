@@ -243,7 +243,7 @@
 
             <!-- Hidden Controls -->
             <div class="hidden">
-              <p-dropdown formControlName="xAxisDirection" [options]="xAxisDirectionOptions"></p-dropdown>
+              <p-dropdown formControlName="xAxisDirection" [options]="directionOptions"></p-dropdown>
               <p-dropdown formControlName="yAxisDirection"></p-dropdown>
             </div>
           </div>
@@ -297,9 +297,19 @@
 
             <!-- Operator Dropdown -->
             <div class="w-40 space-y-1">
-              <p-dropdown [options]="operatorsByRow[i] || []" formControlName="operator" placeholder="Select Operator"
+              <!-- <p-dropdown [options]="operatorsByRow[i] || []" formControlName="operator" placeholder="Select Operator"
                 [showClear]="true" class="w-full" (onChange)="onOperatorChange(i)">
-              </p-dropdown>
+              </p-dropdown> -->
+              <p-dropdown
+  [options]="operatorsByRow[i] || []"
+  optionLabel="label"
+  optionValue="symbol"
+  formControlName="operator"
+  placeholder="Select Operator"
+  class="w-full"
+  [showClear]="true"
+  (onChange)="onOperatorChange(i)">
+</p-dropdown>
               <div *ngIf="filter.get('operator')?.invalid && filter.get('operator')?.touched"
                 class="text-red-500 text-sm mt-1">
                 Operator is required.
@@ -350,7 +360,7 @@
             <!-- Remove Button -->
             <button type="button" (click)="removeFilter(i)" class="flex-shrink-0 w-7 h-7 bg-red-50 hover:bg-red-100 border border-red-200 hover:border-red-300 
                rounded-md flex items-center justify-center transition-colors duration-200 group"
-              title="Remove Sorting">
+              title="Remove Filter">
               <i class="pi pi-trash text-red-500 text-xs group-hover:text-red-600"></i>
             </button>
           </div>
@@ -359,7 +369,7 @@
           <div class="text-center py-3">
             <button type="button" (click)="addFilter()" class="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-blue-600 
                bg-blue-50 hover:bg-blue-100 border border-blue-200 hover:border-blue-300 
-               rounded-md transition-colors duration-200" title="Add Sorting">
+               rounded-md transition-colors duration-200" title="Add Filter">
               <i class="pi pi-plus text-xs"></i>
               Add Filter
             </button>
@@ -441,10 +451,7 @@
 
             <!-- Direction Dropdown -->
             <div class="w-40 space-y-1">
-              <p-dropdown [options]="[
-          { label: 'Ascending (A-Z)', value: 'asc' },
-          { label: 'Descending (Z-A)', value: 'desc' }
-        ]" formControlName="direction" placeholder="Sort Direction" [showClear]="true"
+              <p-dropdown [options]="directionOptions" formControlName="direction" placeholder="Sort Direction" [showClear]="true"
                 class="w-full text-sm [&_.p-dropdown]:!text-sm [&_.p-dropdown]:!py-1.5 [&_.p-dropdown]:!px-2.5">
               </p-dropdown>
             </div>

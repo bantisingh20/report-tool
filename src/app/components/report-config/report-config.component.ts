@@ -33,20 +33,28 @@ export class ReportConfigComponent implements OnInit {
     { label: 'Descending (Z-A)', value: 'desc' }
   ];
 
-  operators: string[] = ['between', 'equals', 'not equals', 'greater than', 'less than', 'contains'];
-  operators2 = [
-    { label: 'between', symbol: 'between' },
-    { label: 'equals', symbol: '=' },
-    { label: 'not equals', symbol: '≠' },
-    { label: 'greater than', symbol: '>' },
-    { label: 'less than', symbol: '<' },
-    { label: 'greater than equal to', symbol: '>=' },
-    { label: 'less than equal to', symbol: '<=' },
-    { label: 'contains', symbol: 'like' }, // or use 'includes' icon like '∈'
+  //operators: string[] = ['between', 'equals', 'not equals', 'greater than', 'less than', 'contains'];
+  operators = [
+    { label: 'Between', symbol: 'between' },
+    { label: 'Equals', symbol: '=' },
+    { label: 'Not Equals', symbol: '!=' },
+    { label: 'Greater Than', symbol: '>' },
+    { label: 'Less Than', symbol: '<' },
+    { label: 'Greater Than or Equal To', symbol: '>=' },
+    { label: 'Less Than or Equal To', symbol: '<=' },
+    { label: 'Contains', symbol: 'like' }
   ];
 
-  stringTypes: string[] = ['varchar', 'character varying', 'character', 'char', 'text', 'citext'];
+  operatorMap = {
+    number: ['between', '=', '!=', '>', '<', '>=', '<='],
+    string: ['=', '!=', 'like'],
+    date: ['between', '=', '!=', '>', '<'],
+    boolean: ['=', '!=']
+  };
+
   Countoperators: string[] = ['sum', 'count', 'average', 'max', 'min'];
+
+  stringTypes: string[] = ['varchar', 'character varying', 'character', 'char', 'text', 'citext'];
   numberTypes: string[] = ['integer', 'smallint', 'bigint', 'decimal', 'numeric', 'real', 'double precision', 'serial', 'bigserial'];
   dateTypes: string[] = ['date', 'timestamp', 'timestamp with time zone', 'timestamp without time zone'];
   booleanTypes: string[] = ['boolean'];
@@ -57,11 +65,8 @@ export class ReportConfigComponent implements OnInit {
   showXYConfig: boolean = true;
   reportId: string | null = null;
   mode: string | null = null;
-  xAxisDirectionOptions = [
-    { label: 'Ascending (A-Z, small to large)', value: 'asc' },
-    { label: 'Descending (Z-A, large to small)', value: 'desc' }
-  ];
-  operatorsByRow: { [key: number]: string[] } = {};
+operatorsByRow: { [index: number]: Array<{ label: string, symbol: string }> } = {};
+  //operatorsByRow: { [key: number]: string[] } = {};
   xAxisTransformationOptions = [
     { label: 'Day-wise', value: 'daywise' },
     { label: 'Month-wise', value: 'monthwise' },
@@ -83,7 +88,7 @@ export class ReportConfigComponent implements OnInit {
 
 
   constructor(private http: HttpClient, private router: Router, private fb: FormBuilder,
-    private route: ActivatedRoute, private metadataService: MetadataService,private notificationService :NotificationService,
+    private route: ActivatedRoute, private metadataService: MetadataService, private notificationService: NotificationService,
     private reprotconfig: ReportConfigService) { }
 
 
@@ -145,8 +150,8 @@ export class ReportConfigComponent implements OnInit {
     });
   }
   //#endregion
- 
- //#region  Radio butotn change
+
+  //#region  Radio butotn change
   onFieldTypeChange() {
     const fieldType = this.reportForm.get('fieldtype')?.value;
 
@@ -168,10 +173,10 @@ export class ReportConfigComponent implements OnInit {
     }
   }
 
- // #endregion
+  // #endregion
 
 
-//#region Table change
+  //#region Table change
   onTableSelect(selectedItem: any) {
     //console.log(selectedItem);
     const selectedTables = this.reportForm.get('tableandview')?.value || [];
@@ -189,7 +194,7 @@ export class ReportConfigComponent implements OnInit {
         const columnsByTable = result.columnsByTable;
 
         if (relatedTables && relatedTables.length >= 1) {
-          const updatedTables = Array.from(new Set([...selectedTables, ...relatedTables])); 
+          const updatedTables = Array.from(new Set([...selectedTables, ...relatedTables]));
           this.tablesAndViews = updatedTables.map(name => ({
             name,
             label: `${this.capitalize(name)} `
@@ -323,7 +328,7 @@ export class ReportConfigComponent implements OnInit {
   }
 
 
-  onFilterFieldChange(field: any, index: number): void {
+  onFilterFieldChangeold(field: any, index: number): void {
     const fielddatatype = field.value.data_type;
     const filterGroup = this.filters.at(index) as FormGroup;
 
@@ -342,7 +347,7 @@ export class ReportConfigComponent implements OnInit {
     }
 
     // 🔑 Store operator list for this row only
-    this.operatorsByRow[index] = newOperators;
+    //this.operatorsByRow[index] = newOperators;
 
     filterGroup.patchValue({
       operator: '',
@@ -352,6 +357,34 @@ export class ReportConfigComponent implements OnInit {
       selectedField: field
     });
   }
+  
+  onFilterFieldChange(field: any, index: number): void {
+  const fieldType = field.value.data_type;
+  const filterGroup = this.filters.at(index) as FormGroup;
+
+  let allowedSymbols: string | string[] = [];
+
+  if (this.numberTypes.includes(fieldType)) {
+    allowedSymbols = this.operatorMap.number;
+  } else if (this.stringTypes.includes(fieldType)) {
+    allowedSymbols = this.operatorMap.string;
+  } else if (this.dateTypes.includes(fieldType)) {
+    allowedSymbols = this.operatorMap.date;
+  } else if (this.booleanTypes.includes(fieldType)) {
+    allowedSymbols = this.operatorMap.boolean;
+  }
+
+  // Filter from master operator list
+  this.operatorsByRow[index] = this.operators.filter(op => allowedSymbols.includes(op.symbol));
+
+  filterGroup.patchValue({
+    operator: '',
+    value: '',
+    valueFrom: '',
+    valueTo: '',
+    selectedField: field
+  });
+}
 
 
 
@@ -424,12 +457,12 @@ export class ReportConfigComponent implements OnInit {
     this.sortby.removeAt(index);
   }
   //#endregion
- 
+
   get isColumnSelected(): boolean {
     const selectedColumns = this.reportForm.get('selectedcolumns')?.value;
     return Array.isArray(selectedColumns) && selectedColumns.length > 0;
   }
- 
+
   get filters() {
     return this.reportForm.get('filters') as FormArray;
   }
@@ -438,7 +471,7 @@ export class ReportConfigComponent implements OnInit {
   get groupby() {
     return this.reportForm.get('groupby') as FormArray;
   }
- 
+
   get sortby() {
     return this.reportForm.get('sortby') as FormArray;
   }
@@ -448,7 +481,7 @@ export class ReportConfigComponent implements OnInit {
   }
 
 
-   onConfirmSave() {
+  onConfirmSave() {
     if (this.reportForm.invalid) {
       this.reportForm.markAllAsTouched();
       this.notificationService.warn('warn', 'Fill All Data , something is missing');
@@ -459,7 +492,7 @@ export class ReportConfigComponent implements OnInit {
     // const reportData = this.reportForm.value; 
     ///console.log('Saving report:', reportname, reportData);
     this.showSaveModal = false;
- 
+
   }
 
   saveConfiguration(): void {
@@ -473,7 +506,7 @@ export class ReportConfigComponent implements OnInit {
     const reportname = this.reportForm.get('reportname')?.value;
 
     if (!reportname || reportname.trim() === '') {
-       this.notificationService.warn('warn', 'Report Name is required.');
+      this.notificationService.warn('warn', 'Report Name is required.');
       return;
     }
 
@@ -484,7 +517,7 @@ export class ReportConfigComponent implements OnInit {
       //config.id = this.reportId;
       this.metadataService.updateReportFormat(config, this.reportId).subscribe({
         next: (response: any) => {
-          this.notificationService.success('Success', response.message);  
+          this.notificationService.success('Success', response.message);
           //this.addNewReport();
           this.router.navigateByUrl('list-report');
         },
@@ -497,7 +530,7 @@ export class ReportConfigComponent implements OnInit {
 
       this.metadataService.SaveReportForamt(config).subscribe({
         next: (response: any) => {
-          this.notificationService.success('Success', response.message);    
+          this.notificationService.success('Success', response.message);
           this.router.navigateByUrl('list-report');
         },
         error: (err) => {
@@ -566,7 +599,7 @@ export class ReportConfigComponent implements OnInit {
     });
 
   }
-  
+
   addNewReport(): void {
     this.reportForm.reset();
     (this.reportForm.get('filters') as FormArray).clear();
@@ -585,7 +618,7 @@ export class ReportConfigComponent implements OnInit {
   }
 
 
-   setFormArray(key: string, values: any[]): void {
+  setFormArray(key: string, values: any[]): void {
     const formArray = this.reportForm.get(key) as FormArray;
     formArray.clear();
 
@@ -618,7 +651,7 @@ export class ReportConfigComponent implements OnInit {
 
     // console.log(formArray); // For debugging: check the form array structure
   }
-  
+
   getColumns(table: any) {
     this.metadataService.getAvailableFieldsForTables(table).subscribe((fields: any[]) => {
       this.availableFields = fields;
