@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
 import { Router } from '@angular/router';
+import { environment } from '../environments/environment';
+import { API_URL } from '../config/api.config';
 
 @Injectable({
   providedIn: 'root'
@@ -9,27 +11,28 @@ import { Router } from '@angular/router';
 export class MetadataService {
 
   currentPath: string;
-  private apiUrl = 'http://localhost:3000/api/metadata';
+  //private apiUrl = 'http://localhost:3000/api/metadata'; 
 
   constructor(private http: HttpClient, private router: Router) {
+    
     this.currentPath = this.router.url;
   }
 
   getTablesAndViews(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/tables`);
+    return this.http.get<any[]>(`${API_URL}/tables`);
   }
 
   getColumns(tableName: string): Observable<string[]> {
-    return this.http.get<string[]>(`${this.apiUrl}/columns/${tableName}`);
+    return this.http.get<string[]>(`${API_URL}/columns/${tableName}`);
   }
 
   getTablesLinkTable(selectedTables: any[]) {
-    return this.http.post<any>(`${this.apiUrl}/check-table-relations`, { selectedTables });
+    return this.http.post<any>(`${API_URL}/check-table-relations`, { selectedTables });
   }
 
 
   getAvailableFieldsForTables(selectedTables: string[]): Observable<any[]> {
-    return this.http.post<any>(`${this.apiUrl}/check-table-relations`, { selectedTables }).pipe(
+    return this.http.post<any>(`${API_URL}/check-table-relations`, { selectedTables }).pipe(
       map((result: { columnsByTable: { [key: string]: any[] } }) => {
         const columnsByTable = result.columnsByTable || {};
 
@@ -58,7 +61,7 @@ export class MetadataService {
 
   getDataforPreview(config: any) {
     console.log('Request Payload:', config);
-    return this.http.post<string[]>(`${this.apiUrl}/report/preview`, config);
+    return this.http.post<string[]>(`${API_URL}/report/preview`, config);
   }
  
   processPreviewData(responseData: any) {
@@ -96,17 +99,17 @@ export class MetadataService {
   }
 
   SaveReportForamt(report: any) {
-    return this.http.post(`${this.apiUrl}/report/save/0`, report);
+    return this.http.post(`${API_URL}/report/save/0`, report);
   }
 
   updateReportFormat(report: any, id: any) {
-    return this.http.post(`${this.apiUrl}/report/save/${id}`, report);
+    return this.http.post(`${API_URL}/report/save/${id}`, report);
   }
   getReportById(id: any) {
-    return this.http.get<any>(`${this.apiUrl}/report/${id}`);
+    return this.http.get<any>(`${API_URL}/report/${id}`);
   }
 
   getListOfReportConfigure() {
-    return this.http.get<string[]>(`${this.apiUrl}/List-Report`);
+    return this.http.get<string[]>(`${API_URL}/List-Report`);
   }
 }

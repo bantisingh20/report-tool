@@ -606,7 +606,7 @@ operatorsByRow: { [index: number]: Array<{ label: string, symbol: string }> } = 
     (this.reportForm.get('groupby') as FormArray).clear();
     (this.reportForm.get('sortby') as FormArray).clear();
     (this.reportForm.get('xyaxis') as FormArray).clear();
-    this.reprotconfig.clearConfiguration();
+     
     console.log('New report initiated');
     this.ngOnInit();
     this.router.navigate(['dynamic-report']);

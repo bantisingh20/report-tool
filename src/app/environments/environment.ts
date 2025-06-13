@@ -1,5 +1,6 @@
 // src/environments/environment.ts
 export const environment = {
-  production: false,
-  apiUrl: 'https://dev.api.example.com'  // your dev API URL here
+  production: true,
+  localApiUrl: 'http://localhost:3000/api/metadata',
+  prodApiUrl: 'https://report-api-nu.vercel.app/api/metadata'
 };
