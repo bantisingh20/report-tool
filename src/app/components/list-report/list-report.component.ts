@@ -13,14 +13,17 @@ import { NotificationService } from '../../service/NotificationService.service';
   templateUrl: './list-report.component.html',
   styleUrl: './list-report.component.css'
 })
-export class ListReportComponent implements OnInit, AfterViewInit {
+//implements OnInit, AfterViewInit
+export class ListReportComponent  {
 companyProfiles: any[] = [];
 
   selectedConfig: any = null;
   viewType: 'report' | 'chart' | null = null;
   showPreview: boolean = false;
   previewData: any;
-  constructor(private router: Router, private metadataService: MetadataService, private notificationService: NotificationService) { }
+  constructor(private router: Router, private metadataService: MetadataService, private notificationService: NotificationService) { 
+    this.loadReport();
+  }
 
   displayedColumns: string[] = [];
 
@@ -124,7 +127,7 @@ companyProfiles: any[] = [];
 
     this.metadataService.getListOfReportConfigure().subscribe({
       next: (response: any) => {
-        this.listData = response.reports;
+        this.listData = response.data;
       }
       , error: (err) => {
         console.log(err);

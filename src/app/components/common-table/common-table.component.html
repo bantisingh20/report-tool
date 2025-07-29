@@ -1,42 +1,23 @@
-<!-- this is old and working with pagination <p-table [value]="group ? groupedData : InputData" [paginator]="false" [rows]="rows" [first]="first"
-  (onPage)="onPageChange($event)" [sortMode]="'multiple'" [scrollable]="true" [scrollHeight]="'calc(100vh - 200px)'"
-  class="hidden table-auto overflow-x-auto overflow-y-auto w-full max-w-full">
-  <ng-template pTemplate="header">
-    <tr>
-      <th *ngFor="let col of columns" pSortableColumn="{{ col.field }}">
-        {{ col.header }}
-        <p-sortIcon [field]="col.field"></p-sortIcon>
-      </th>
-    </tr>
-  </ng-template>
-
-  <ng-template pTemplate="body" let-row>
-    <tr>
-      <ng-container *ngFor="let col of columns">
-        <td *ngIf="group && Inputgroupby.includes(col.field)">
-          <ng-container *ngIf="row.__rowspan[col.field] > 0">
-            <span [attr.rowspan]="row.__rowspan[col.field]" class="group-cell">
-              {{ row[col.field] }}
-            </span>
-          </ng-container>
-        </td>
-        <td *ngIf="!group || !Inputgroupby.includes(col.field)">
-          {{ row[col.field] }}
-        </td>
-      </ng-container>
-    </tr>
-  </ng-template>
-</p-table> -->
-  
-
-
- <p-table
+ 
+ <!--  -->
+ <!-- <p-table 
   [value]="group ? groupedData : InputData"
   [rows]="rows"
   [first]="first"
+  [totalRecords]="pagination?.totalCount || 0"
   [paginator]="!group"
   [rowsPerPageOptions]="[5,10,20]"
-  (onPage)="onPageChange($event)"
+  [lazy]="true"
+  (onLazyLoad)="loadDataLazy($event)" 
+  [responsiveLayout]="'scroll'"
+  [rowGroupMode]="group ? 'rowspan' : undefined"
+  [groupRowsBy]="group ? Inputgroupby[0] : undefined"
+  [dataKey]="group ? Inputgroupby[0] : undefined"> -->
+  
+  
+  <p-table
+  [value]="group ? groupedData : InputData" 
+  [rows]="pagination.pageSize" 
   [responsiveLayout]="'scroll'"
   [rowGroupMode]="group ? 'rowspan' : undefined"
   [groupRowsBy]="group ? Inputgroupby[0] : undefined"
@@ -65,51 +46,14 @@
       </ng-container>
     </tr>
   </ng-template>
+
+  
+
 </p-table> 
 
-
-<!-- <p-table
-  [value]="virtualData"
-  [columns]="columns"
-  [virtualScroll]="true"
-  [scrollHeight]="'500px'"
-  [rows]="rows"
-  [lazy]="true"
-  [totalRecords]="totalCount"
-  (onLazyLoad)="loadDataLazy($event)"
-  [loading]="loading"
-  [responsiveLayout]="'scroll'"
-  [rowGroupMode]="group ? 'rowspan' : undefined"
-  [groupRowsBy]="group ? Inputgroupby[0] : undefined"
-  [dataKey]="group ? Inputgroupby[0] : undefined">
- 
-  <ng-template pTemplate="header">
-    <tr>
-      <th *ngFor="let col of columns">
-        {{ col.header }}
-      </th>
-    </tr>
-  </ng-template>
- 
-  <ng-template
-    pTemplate="body"
-    let-rowData
-    let-rowgroup="rowgroup"
-    let-rowspan="rowspan">
-    <tr>
-      <ng-container *ngFor="let col of columns">
-        <td
-          *ngIf="!group || !Inputgroupby.includes(col.field) || rowgroup"
-          [attr.rowspan]="group && Inputgroupby.includes(col.field) ? rowData.__rowspan[col.field] : null">
-          {{ rowData[col.field] }}
-        </td>
-      </ng-container>
-    </tr>
-  </ng-template>
-</p-table>
- 
-<div class="text-end mt-2">
-  <small>
-    Showing {{ first + virtualData.length }} of {{ totalCount }} entries
-  </small>
-</div> -->
+<p-paginator
+  [first]="(pagination.page - 1) * pagination.pageSize"
+  [rows]="pagination.pageSize"
+  [totalRecords]="pagination.totalCount" 
+  (onPageChange)="onPageChange($event)">
+</p-paginator>

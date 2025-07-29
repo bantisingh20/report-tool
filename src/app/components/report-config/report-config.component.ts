@@ -1,3 +1,4 @@
+
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, ValidationErrors, Validators } from '@angular/forms';
@@ -124,7 +125,7 @@ operatorsByRow: { [index: number]: Array<{ label: string, symbol: string }> } = 
 
   loadReportData(id: string): void {
     this.metadataService.getReportById(id).subscribe((response: any) => {
-      const data = response.report;
+      const data = response.data;
 
       console.log(data);
       this.reportForm.patchValue({
@@ -559,9 +560,9 @@ operatorsByRow: { [index: number]: Array<{ label: string, symbol: string }> } = 
         const responseData = response?.data;
 
 
-        const { data, groupBy, chartData, displayedColumns, showPreview, ischart, isRaw, isGroup } = this.metadataService.processPreviewData(responseData);
+        const { data, groupBy, chartData, displayedColumns, showPreview, ischart, isRaw, isGroup,pagination,queryKey } = this.metadataService.processPreviewData(responseData);
 
-        this.previewData = { data, groupBy, chartData, displayedColumns, showPreview, ischart, isRaw, isGroup };
+        this.previewData = { data, groupBy, chartData, displayedColumns, showPreview, ischart, isRaw, isGroup ,pagination,queryKey};
         this.displayedColumns = displayedColumns;
         this.showPreview = showPreview;
 
@@ -573,6 +574,7 @@ operatorsByRow: { [index: number]: Array<{ label: string, symbol: string }> } = 
           this.notificationService.success('success', 'Fetch Data Successfully.');
           //this.notificationService.showNotification("Fetch Data Successfully.", 'success');
         } else {
+          this.notificationService.warn('Warn', 'Data Not Found');
           //console.log(this.previewData);
           //this.notificationService.showNotification("No Data Found.", 'warning');
         }
@@ -594,6 +596,7 @@ operatorsByRow: { [index: number]: Array<{ label: string, symbol: string }> } = 
 
         const message = err?.error?.message || 'Failed to fetch preview data.';
         console.error('Error fetching data:', err);
+        this.notificationService.warn('Error fetching data:', message);
         // this.notificationService.showNotification(message, 'error');
       }
     });
