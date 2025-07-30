@@ -20,7 +20,11 @@ declare var bootstrap: any;
 })
 
 export class ReportConfigComponent implements OnInit {
-
+  pagination = {
+    page: 1,
+    pageSize: 10,
+    totalCount: 0,
+  };
   showSaveModal = false;
   originalTablesAndViews: any[] = [];
   previewMode: 'report' | 'chart' | null = null;
@@ -555,7 +559,7 @@ operatorsByRow: { [index: number]: Array<{ label: string, symbol: string }> } = 
 
     const config = this.reportForm.value;
 
-    this.metadataService.getDataforPreview(config).subscribe({
+    this.metadataService.getDataforPreview(config,this.pagination).subscribe({
       next: (response: any) => {
         const responseData = response?.data;
 

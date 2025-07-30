@@ -180,10 +180,10 @@ export class MetadataService {
       );
   }
 
-  getDataforPreview(config: any) {
+  getDataforPreview(config: any,pagination:any) {
     console.log('Request Payload:', config);
     return this.http.post<string[]>(
-      `${API_URL}/report/preview`,
+      `${API_URL}/report/preview?page=${pagination?.page || 1}&pageSize=${pagination?.pageSize || 10 }`,
       config
     );
   }
@@ -254,10 +254,10 @@ export class MetadataService {
     return this.http.get<any>(`${API_URL}/report/${id}`);
   }
 
-  getListOfReportConfigure() {
-    return this.http.get<string[]>(
-      `${API_URL}/List-Report`
-    );
+  getListOfReportConfigure(pagination:any) {
+    return this.http.get<any>(
+    `${API_URL}/List-Report?page=${pagination.page}&pageSize=${pagination.pageSize}`
+  );
   }
   
 
