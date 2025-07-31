@@ -13,126 +13,142 @@ import { NotificationService } from '../../service/NotificationService.service';
   templateUrl: './list-report.component.html',
   styleUrl: './list-report.component.css'
 })
-export class ListReportComponent implements OnInit, AfterViewInit {
-companyProfiles: any[] = [];
+//implements OnInit, AfterViewInit
+export class ListReportComponent  {
 
+  companyProfiles: any[] = [];
+  pagination = {
+    page: 1,
+    pageSize: 5,
+    totalCount: 0,
+  };
   selectedConfig: any = null;
   viewType: 'report' | 'chart' | null = null;
   showPreview: boolean = false;
   previewData: any;
-  constructor(private router: Router, private metadataService: MetadataService, private notificationService: NotificationService) { }
-
-  displayedColumns: string[] = [];
-
-  listData: any[] = [];
-
-  configs = [];
-
-  ngAfterViewInit() {
-    //this.loadReport();
-  }
-
-  ngOnInit(): void {
-
-    this.companyProfiles = [
-            {
-                name: "Apple",
-                sector: "Technology",
-                thisYearSales: "$ 2,000,000,000",
-                lastYearSales: "$ 1,700,000,000",
-                thisYearGrowth: "21%",
-                lastYearGrowth: "15%",
-            },
-            {
-                name: "Mac Donalds",
-                sector: "Food",
-                thisYearSales: "$ 1,100,000,000",
-                lastYearSales: "$ 800,000,000",
-                thisYearGrowth: "18%",
-                lastYearGrowth: "15%",
-            },
-            {
-                name: "Google",
-                sector: "Technology",
-                thisYearSales: "$ 1,800,000,000",
-                lastYearSales: "$ 1,500,000,000",
-                thisYearGrowth: "15%",
-                lastYearGrowth: "13%",
-            },
-            {
-                name: "Domino's",
-                sector: "Food",
-                thisYearSales: "$ 1,000,000,000",
-                lastYearSales: "$ 800,000,000",
-                thisYearGrowth: "13%",
-                lastYearGrowth: "14%",
-            },
-            {
-                name: "Meta",
-                sector: "Technology",
-                thisYearSales: "$ 1,100,000,000",
-                lastYearSales: "$ 1,200,000,000",
-                thisYearGrowth: "11%",
-                lastYearGrowth: "12%",
-            },
-            {
-                name: "Snapchat",
-                sector: "Technology",
-                thisYearSales: "$ 1,500,000,000",
-                lastYearSales: "$ 1,200,000,000",
-                thisYearGrowth: "16%",
-                lastYearGrowth: "14%",
-            },
-            {
-                name: "Tesla",
-                sector: "AutoMobile",
-                thisYearSales: "$ 1,300,000,000",
-                lastYearSales: "$ 900,000,000",
-                thisYearGrowth: "23%",
-                lastYearGrowth: "16%",
-            },
-            {
-                name: "Ford",
-                sector: "AutoMobile",
-                thisYearSales: "$ 700,000,000",
-                lastYearSales: "$ 750,000,000",
-                thisYearGrowth: "14%",
-                lastYearGrowth: "15%",
-            },
-            {
-                name: "Twitter",
-                sector: "Technology",
-                thisYearSales: "$ 1,200,000,000",
-                lastYearSales: "$ 1,200,000,000",
-                thisYearGrowth: "19%",
-                lastYearGrowth: "18%",
-            }
-        ];
-
+  constructor(private router: Router, private metadataService: MetadataService, private notificationService: NotificationService) { 
     this.loadReport();
-
-    this.router.events.pipe(
-      filter(event => event instanceof NavigationEnd)
-    ).subscribe(() => {
-      this.loadReport();
-    });
-
   }
+
+  displayedColumns: string[] = []; 
+  listData: any[] = [];  
+  configs = [];
+ 
+  // ngOnInit(): void {
+
+  //   this.companyProfiles = [
+  //           {
+  //               name: "Apple",
+  //               sector: "Technology",
+  //               thisYearSales: "$ 2,000,000,000",
+  //               lastYearSales: "$ 1,700,000,000",
+  //               thisYearGrowth: "21%",
+  //               lastYearGrowth: "15%",
+  //           },
+  //           {
+  //               name: "Mac Donalds",
+  //               sector: "Food",
+  //               thisYearSales: "$ 1,100,000,000",
+  //               lastYearSales: "$ 800,000,000",
+  //               thisYearGrowth: "18%",
+  //               lastYearGrowth: "15%",
+  //           },
+  //           {
+  //               name: "Google",
+  //               sector: "Technology",
+  //               thisYearSales: "$ 1,800,000,000",
+  //               lastYearSales: "$ 1,500,000,000",
+  //               thisYearGrowth: "15%",
+  //               lastYearGrowth: "13%",
+  //           },
+  //           {
+  //               name: "Domino's",
+  //               sector: "Food",
+  //               thisYearSales: "$ 1,000,000,000",
+  //               lastYearSales: "$ 800,000,000",
+  //               thisYearGrowth: "13%",
+  //               lastYearGrowth: "14%",
+  //           },
+  //           {
+  //               name: "Meta",
+  //               sector: "Technology",
+  //               thisYearSales: "$ 1,100,000,000",
+  //               lastYearSales: "$ 1,200,000,000",
+  //               thisYearGrowth: "11%",
+  //               lastYearGrowth: "12%",
+  //           },
+  //           {
+  //               name: "Snapchat",
+  //               sector: "Technology",
+  //               thisYearSales: "$ 1,500,000,000",
+  //               lastYearSales: "$ 1,200,000,000",
+  //               thisYearGrowth: "16%",
+  //               lastYearGrowth: "14%",
+  //           },
+  //           {
+  //               name: "Tesla",
+  //               sector: "AutoMobile",
+  //               thisYearSales: "$ 1,300,000,000",
+  //               lastYearSales: "$ 900,000,000",
+  //               thisYearGrowth: "23%",
+  //               lastYearGrowth: "16%",
+  //           },
+  //           {
+  //               name: "Ford",
+  //               sector: "AutoMobile",
+  //               thisYearSales: "$ 700,000,000",
+  //               lastYearSales: "$ 750,000,000",
+  //               thisYearGrowth: "14%",
+  //               lastYearGrowth: "15%",
+  //           },
+  //           {
+  //               name: "Twitter",
+  //               sector: "Technology",
+  //               thisYearSales: "$ 1,200,000,000",
+  //               lastYearSales: "$ 1,200,000,000",
+  //               thisYearGrowth: "19%",
+  //               lastYearGrowth: "18%",
+  //           }
+  //       ];
+
+  //   this.loadReport();
+
+  //   this.router.events.pipe(
+  //     filter(event => event instanceof NavigationEnd)
+  //   ).subscribe(() => {
+  //     this.loadReport();
+  //   });
+
+  // }
 
 
   loadReport() {
-
-    this.metadataService.getListOfReportConfigure().subscribe({
+    const { page, pageSize } = this.pagination;
+    this.metadataService.getListOfReportConfigure(this.pagination).subscribe({
       next: (response: any) => {
-        this.listData = response.reports;
+        this.listData = response.data;
+
+        if (response.pagination) {
+          this.pagination.totalCount = response.pagination.totalCount;
+          console.log(this.pagination)
+          //this.pagination.totalPages = response.pagination.totalPages;
+        }
+
+        console.log(this.listData);
       }
       , error: (err) => {
         console.log(err);
-        this.notificationService.error('Error', err.statusText);
+        //this.notificationService.error('Error', err.statusText);
 
       }
     })
   }
+
+  onPageChange(event: any) {
+    this.pagination.page = Math.floor(event.first / event.rows) + 1;
+    this.pagination.pageSize = event.rows;
+    this.loadReport();
+  } 
 
   goToEdit(id: string): void {
     this.router.navigate(['dynamic-report', id], { queryParams: { mode: 'edit' } });
@@ -146,13 +162,13 @@ companyProfiles: any[] = [];
     const config = { ...item };
     //console.log(config);
 
-    this.metadataService.getDataforPreview(config).subscribe({
+    this.metadataService.getDataforPreview(config,null).subscribe({
       next: (response: any) => {
         const responseData = response?.data;
         console.log('API Response:', responseData);
-        const { data, groupBy, chartData, displayedColumns, showPreview, ischart, isRaw, isGroup } = this.metadataService.processPreviewData(responseData);
+        const { data, groupBy, chartData, displayedColumns, showPreview, ischart, isRaw, isGroup ,pagination,queryKey} = this.metadataService.processPreviewData(responseData);
 
-        this.previewData = { data, groupBy, chartData, displayedColumns, showPreview, ischart, isRaw, isGroup };
+        this.previewData = { data, groupBy, chartData, displayedColumns, showPreview, ischart, isRaw, isGroup ,pagination,queryKey };
         this.displayedColumns = displayedColumns;
         this.showPreview = showPreview; 
         if (this.previewData.data.length > 0) {

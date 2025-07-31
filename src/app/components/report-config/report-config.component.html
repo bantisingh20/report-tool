@@ -1,3 +1,4 @@
+
 <p-tabView [(activeIndex)]="activeTab" class="p-tabview-sm">
 
   <!-- Tab 1: Report Configuration -->
@@ -485,9 +486,9 @@
       *ngIf="showPreview && previewData.ischart"></app-chart-component>
   </p-tabPanel>
 
-  <p-tabPanel header="Summary" *ngIf="showPreview && !previewData.ischart">
+  <p-tabPanel header="Summary" *ngIf="showPreview && !previewData.ischart ">
     <app-common-table *ngIf="showPreview && !previewData.ischart" [InputData]="previewData.data"
-      [israw]="!previewData.isGroup" [Inputgroupby]="previewData.groupBy" [group]="previewData.isGroup">
+      [israw]="!previewData.isGroup" [Inputgroupby]="previewData.groupBy" [group]="previewData.isGroup" [pagination]="previewData.pagination" [queryKey] ="previewData.queryKey">
     </app-common-table>
   </p-tabPanel>
 

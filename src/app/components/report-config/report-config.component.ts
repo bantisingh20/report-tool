@@ -1,3 +1,4 @@
+
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, ValidationErrors, Validators } from '@angular/forms';
@@ -17,9 +18,13 @@ declare var bootstrap: any;
   templateUrl: './report-config.component.html',
   styleUrl: './report-config.component.css'
 })
-
-export class ReportConfigComponent implements OnInit {
-
+//implements OnInit
+export class ReportConfigComponent {
+  pagination = {
+    page: 1,
+    pageSize: 10,
+    totalCount: 0,
+  };
   showSaveModal = false;
   originalTablesAndViews: any[] = [];
   previewMode: 'report' | 'chart' | null = null;
@@ -65,7 +70,7 @@ export class ReportConfigComponent implements OnInit {
   showXYConfig: boolean = true;
   reportId: string | null = null;
   mode: string | null = null;
-operatorsByRow: { [index: number]: Array<{ label: string, symbol: string }> } = {};
+  operatorsByRow: { [index: number]: Array<{ label: string, symbol: string }> } = {};
   //operatorsByRow: { [key: number]: string[] } = {};
   xAxisTransformationOptions = [
     { label: 'Day-wise', value: 'daywise' },
@@ -89,7 +94,9 @@ operatorsByRow: { [index: number]: Array<{ label: string, symbol: string }> } = 
 
   constructor(private http: HttpClient, private router: Router, private fb: FormBuilder,
     private route: ActivatedRoute, private metadataService: MetadataService, private notificationService: NotificationService,
-    private reprotconfig: ReportConfigService) { }
+    private reprotconfig: ReportConfigService) {
+    this.ngOnInit();
+  }
 
 
   //#region On page load initial setup
@@ -101,7 +108,7 @@ operatorsByRow: { [index: number]: Array<{ label: string, symbol: string }> } = 
       this.tablesAndViews = data;
       this.tablesAndViews = this.tablesAndViews.map(field => ({
         ...field,
-        label: `${this.capitalize(field.name)} || ${this.capitalize(field.type)}`
+        label: `${this.capitalize(field.label)} || ${this.capitalize(field.type)}`
       }));
 
       this.originalTablesAndViews = [...this.tablesAndViews];
@@ -124,7 +131,7 @@ operatorsByRow: { [index: number]: Array<{ label: string, symbol: string }> } = 
 
   loadReportData(id: string): void {
     this.metadataService.getReportById(id).subscribe((response: any) => {
-      const data = response.report;
+      const data = response.data;
 
       console.log(data);
       this.reportForm.patchValue({
@@ -189,23 +196,51 @@ operatorsByRow: { [index: number]: Array<{ label: string, symbol: string }> } = 
 
     if (selectedTables) {
 
+      // this.metadataService.getTablesLinkTable(selectedTables).subscribe((result: any) => {
+      //   console.log(result);
+      //   const relatedTables = result.data; 
+      //     console.log(`relatedTables : ${relatedTables}`)
+      //    console.log(`selectedtable : ${selectedTables}`)
+      //   if (relatedTables && relatedTables.length >= 1) {
+      //     const updatedTables = Array.from(new Set([...selectedTables, ...relatedTables]));
+      //     console.log(`updatedTables : ${updatedTables}`)
+      //     this.tablesAndViews = updatedTables.map(name => ({
+      //       name,
+      //       label: `${this.capitalize(name)} `
+      //     }));
+
+      //   } else {
+      //     //console.log("Selected tables are not related");
+      //   }
+      // });
+
       this.metadataService.getTablesLinkTable(selectedTables).subscribe((result: any) => {
-        const relatedTables = result.relatedTables;
-        const columnsByTable = result.columnsByTable;
+        const relatedTables = result.data || [];
 
-        if (relatedTables && relatedTables.length >= 1) {
-          const updatedTables = Array.from(new Set([...selectedTables, ...relatedTables]));
-          this.tablesAndViews = updatedTables.map(name => ({
-            name,
-            label: `${this.capitalize(name)} `
-          }));
+        console.log("selectedTables:", selectedTables);
+        console.log("relatedTables:", relatedTables);
 
-          //console.log("Linked tables found:", relatedTables);
-          //console.log("Columns:", columnsByTable);
-        } else {
-          //console.log("Selected tables are not related");
-        }
+        // Convert selectedTables (strings) to same object structure as relatedTables
+        const selectedAsObjects = (selectedTables as string[]).map(name => {
+        const tableName = name.split('.').pop() || name;
+        return {
+          name,
+          label: this.capitalize(tableName)
+        };
       });
+
+        // Merge both arrays and remove duplicates by `name`
+        const merged = [...selectedAsObjects, ...relatedTables];
+        const uniqueByName = Array.from(
+          new Map(merged.map(obj => [obj.name, obj])).values()
+        );
+
+        // Assign to your data source
+        this.tablesAndViews = uniqueByName;
+
+        console.log("this.tablesAndViews:", this.tablesAndViews);
+      });
+
 
       this.metadataService.getAvailableFieldsForTables(selectedTables).subscribe((fields: any[]) => {
         this.availableFields = fields;
@@ -357,34 +392,34 @@ operatorsByRow: { [index: number]: Array<{ label: string, symbol: string }> } = 
       selectedField: field
     });
   }
-  
+
   onFilterFieldChange(field: any, index: number): void {
-  const fieldType = field.value.data_type;
-  const filterGroup = this.filters.at(index) as FormGroup;
+    const fieldType = field.value.data_type;
+    const filterGroup = this.filters.at(index) as FormGroup;
 
-  let allowedSymbols: string | string[] = [];
+    let allowedSymbols: string | string[] = [];
 
-  if (this.numberTypes.includes(fieldType)) {
-    allowedSymbols = this.operatorMap.number;
-  } else if (this.stringTypes.includes(fieldType)) {
-    allowedSymbols = this.operatorMap.string;
-  } else if (this.dateTypes.includes(fieldType)) {
-    allowedSymbols = this.operatorMap.date;
-  } else if (this.booleanTypes.includes(fieldType)) {
-    allowedSymbols = this.operatorMap.boolean;
+    if (this.numberTypes.includes(fieldType)) {
+      allowedSymbols = this.operatorMap.number;
+    } else if (this.stringTypes.includes(fieldType)) {
+      allowedSymbols = this.operatorMap.string;
+    } else if (this.dateTypes.includes(fieldType)) {
+      allowedSymbols = this.operatorMap.date;
+    } else if (this.booleanTypes.includes(fieldType)) {
+      allowedSymbols = this.operatorMap.boolean;
+    }
+
+    // Filter from master operator list
+    this.operatorsByRow[index] = this.operators.filter(op => allowedSymbols.includes(op.symbol));
+
+    filterGroup.patchValue({
+      operator: '',
+      value: '',
+      valueFrom: '',
+      valueTo: '',
+      selectedField: field
+    });
   }
-
-  // Filter from master operator list
-  this.operatorsByRow[index] = this.operators.filter(op => allowedSymbols.includes(op.symbol));
-
-  filterGroup.patchValue({
-    operator: '',
-    value: '',
-    valueFrom: '',
-    valueTo: '',
-    selectedField: field
-  });
-}
 
 
 
@@ -554,14 +589,14 @@ operatorsByRow: { [index: number]: Array<{ label: string, symbol: string }> } = 
 
     const config = this.reportForm.value;
 
-    this.metadataService.getDataforPreview(config).subscribe({
+    this.metadataService.getDataforPreview(config, this.pagination).subscribe({
       next: (response: any) => {
         const responseData = response?.data;
 
 
-        const { data, groupBy, chartData, displayedColumns, showPreview, ischart, isRaw, isGroup } = this.metadataService.processPreviewData(responseData);
+        const { data, groupBy, chartData, displayedColumns, showPreview, ischart, isRaw, isGroup, pagination, queryKey } = this.metadataService.processPreviewData(responseData);
 
-        this.previewData = { data, groupBy, chartData, displayedColumns, showPreview, ischart, isRaw, isGroup };
+        this.previewData = { data, groupBy, chartData, displayedColumns, showPreview, ischart, isRaw, isGroup, pagination, queryKey };
         this.displayedColumns = displayedColumns;
         this.showPreview = showPreview;
 
@@ -573,6 +608,7 @@ operatorsByRow: { [index: number]: Array<{ label: string, symbol: string }> } = 
           this.notificationService.success('success', 'Fetch Data Successfully.');
           //this.notificationService.showNotification("Fetch Data Successfully.", 'success');
         } else {
+          this.notificationService.warn('Warn', 'Data Not Found');
           //console.log(this.previewData);
           //this.notificationService.showNotification("No Data Found.", 'warning');
         }
@@ -594,6 +630,7 @@ operatorsByRow: { [index: number]: Array<{ label: string, symbol: string }> } = 
 
         const message = err?.error?.message || 'Failed to fetch preview data.';
         console.error('Error fetching data:', err);
+        this.notificationService.warn('Error fetching data:', message);
         // this.notificationService.showNotification(message, 'error');
       }
     });
@@ -606,7 +643,7 @@ operatorsByRow: { [index: number]: Array<{ label: string, symbol: string }> } = 
     (this.reportForm.get('groupby') as FormArray).clear();
     (this.reportForm.get('sortby') as FormArray).clear();
     (this.reportForm.get('xyaxis') as FormArray).clear();
-     
+
     console.log('New report initiated');
     this.ngOnInit();
     this.router.navigate(['dynamic-report']);

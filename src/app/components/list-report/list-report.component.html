@@ -38,7 +38,7 @@
           </div>
           <div>
             <p class="text-xs text-slate-600 uppercase tracking-wide">Total Reports</p>
-            <p class="text-lg font-bold text-slate-800">{{ listData?.length || 0 }}</p>
+            <p class="text-lg font-bold text-slate-800">{{ pagination.totalCount || 0 }}</p>
           </div>
         </div>
       </div>
@@ -50,7 +50,7 @@
           </div>
           <div>
             <p class="text-xs text-slate-600 uppercase tracking-wide">Active</p>
-            <p class="text-lg font-bold text-slate-800">{{ listData?.length || 0 }}</p>
+            <p class="text-lg font-bold text-slate-800">{{ pagination.totalCount || 0 }}</p>
           </div>
         </div>
       </div>
@@ -77,7 +77,7 @@
             Reports List
           </h3>
           <span class="text-xs bg-teal-100 text-teal-700 px-2 py-1 rounded-full font-medium">
-            {{ listData?.length || 0 }} items
+            {{ pagination.totalCount || 0 }} items
           </span>
         </div>
       </div>
@@ -85,7 +85,7 @@
       <div class="overflow-x-auto">
         <p-table 
           [value]="listData" 
-          [paginator]="true" 
+          [paginator]="false" 
           [rows]="10"
           [rowsPerPageOptions]="[5, 10, 25, 50]"
           [responsiveLayout]="'scroll'" 
@@ -115,7 +115,7 @@
             <tr class="hover:bg-teal-50/50 transition-colors duration-150 border-b border-slate-100">
               <td class="text-center !py-3 !px-4">
                 <span class="inline-flex items-center justify-center w-6 h-6 bg-slate-100 text-slate-600 rounded-full text-xs font-medium">
-                  {{ rowIndex + 1 }}
+                  {{ config.srNo }}
                 </span>
               </td>
               <td class="!py-3 !px-4">
@@ -186,6 +186,13 @@
             </tr>
           </ng-template>
         </p-table>
+
+        <p-paginator
+          [first]="(pagination.page - 1) * pagination.pageSize"
+          [rows]="pagination.pageSize"
+          [totalRecords]="pagination.totalCount" 
+          (onPageChange)="onPageChange($event)">
+        </p-paginator>
       </div>
     </div>
 
@@ -245,12 +252,15 @@
                   </span>
                 </div>
                 <div class="overflow-auto">
-                  <app-common-table 
+                  <!-- <app-common-table 
                     [InputData]="previewData.data" 
                     [israw]="!previewData.isGroup"
                     [Inputgroupby]="previewData.groupBy" 
                     [group]="previewData.isGroup">
-                  </app-common-table>
+                  </app-common-table> -->
+                    <app-common-table *ngIf="showPreview && !previewData.ischart" [InputData]="previewData.data"
+                      [israw]="!previewData.isGroup" [Inputgroupby]="previewData.groupBy" [group]="previewData.isGroup" [pagination]="previewData.pagination" [queryKey] ="previewData.queryKey">
+                    </app-common-table>
                 </div>
               </div>
             </ng-container>
