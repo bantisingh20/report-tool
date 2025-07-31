@@ -142,12 +142,7 @@ export class MetadataService {
   }
 
   getTablesLinkTable(selectedTables: any[]) {
-    return this.http.post<any>(
-      `${API_URL}/check-table-relations`,
-      {
-        selectedTables,
-      }
-    );
+    return this.http.post<any>( `${API_URL}/related-tables`, { selectedTables, } );
   }
 
   getAvailableFieldsForTables(selectedTables: string[]): Observable<any[]> {
